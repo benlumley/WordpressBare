@@ -59,15 +59,14 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-throw new Exception('The encryption keys here are empty - head to https://api.wordpress.org/secret-key/1.1/salt/ to get some, and paste them in to wp-config.php, removing this exception');
-define('AUTH_KEY',         '');
-define('SECURE_AUTH_KEY',  '');
-define('LOGGED_IN_KEY',    '');
-define('NONCE_KEY',        '');
-define('AUTH_SALT',        '');
-define('SECURE_AUTH_SALT', '');
-define('LOGGED_IN_SALT',   '');
-define('NONCE_SALT',       '');
+define('AUTH_KEY',         '~0|M,,^L&t5)##X_086Qo$+0lP _r,FL8[i2G@?Pl+~DVE(X%~D(#V%4jO(x*H_/');
+define('SECURE_AUTH_KEY',  'rtZgdTVTcO^<<xl_az?aJYJiJ~6v1T`vUpWYAA<YLRV3o6Wm:dG:9hMu>Ui|Fk|^');
+define('LOGGED_IN_KEY',    'v2zM-&fSbskTrLEc@0y<>cuzR%g@b4F?k.rW<2Iqy-aJ`(n+6wK%)&]|iuiK=jm!');
+define('NONCE_KEY',        'y3%mL$4O$I0XWhPgS`|s<[H~@h.1c+aW1yy|uKb]#IoWTS=|o]1BlPE8C+3Etd}6');
+define('AUTH_SALT',        'xwl_:R+BDEGktX9Y=<Kx9++8{df6,gk!TK:1YAU%&`11Z>>[2v9Y%.[F3_=FF,fy');
+define('SECURE_AUTH_SALT', 'Go#{FCd5/rtVplh-E7;M]p{!kk&ZfuQ!@at|B>S;+)Ly]^*X/!c@F/w[d-+s2o!m');
+define('LOGGED_IN_SALT',   'Z{xZ~(b76867,*Vu!(5SA`|zQYp_i&`u_C`CxjICn-e-+x:pjd1|t*kL/wR$H*--');
+define('NONCE_SALT',       'Qq]-,WkN:(Ki%.FC4]%Fsd0bEr(BHeGJ`vl%3@Cw?Rl,%[|jWB-eq{,3|^-hDbY|');
 
 /**#@-*/
 

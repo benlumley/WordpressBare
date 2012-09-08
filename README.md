@@ -6,6 +6,7 @@ Quick summary of what I've done:
 
  - Wordpress itself is a submodule under /wordpress. This makes gitting, sorting out wordpress upgrades, etc much easier.
  - wp-content is not within WordPress, it's been moved to wordpress–content, which makes it possible to keep WordPress itself out of version control but still version control themes/plugins.
+ - You will need to visit https://api.wordpress.org/secret-key/1.1/salt/ and copy/paste the keys from that url over the values in wp-config.php, and remove the Exception.
 
 PS: As we've got git submodules here, after cloning, please run:
 
@@ -27,3 +28,6 @@ You can customise the config of the development machine in:
 
      .puppet/manifests/base.pp
 
+## Pagodabox
+
+This repo also includes a Boxfile, so you can clone it and push it to a pagodabox for free (for a small site) and easy hosting - see http://pagodabox.com/
