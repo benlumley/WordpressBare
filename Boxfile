@@ -1,0 +1,7 @@
+web1: 
+  name: wp-site 
+  shared_writable_dirs:
+    - wordpress-content/uploads/
+
+db1:
+  name: wpsite-prod

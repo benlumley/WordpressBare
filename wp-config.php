@@ -32,12 +32,13 @@ if (strpos($_SERVER['HTTP_HOST'], 'vcap.me')) {
     define('WP_HOME', 'http://test.wpsite.co.uk');
     define('WP_SITEURL', 'http://test.wpsite.co.uk/wordpress');
 } else {
-    define('DB_NAME', 'wpsite_prod');
-    define('DB_USER', 'wpsite_prod');
-    define('DB_PASSWORD', '');
-    define('DB_HOST', 'localhost');
-    define('WP_HOME', 'http://wpsite.co.uk');
-    define('WP_SITEURL', 'http://wpsite.co.uk/wordpress');
+    // these are details for use with pagoda box
+    define('DB_NAME', $_SERVER["DB1_NAME"]);
+    define('DB_USER', $_SERVER["DB1_USER"]);
+    define('DB_PASSWORD', $_SERVER["DB1_PASS"]);
+    define('DB_HOST', $_SERVER["DB1_HOST"]);
+    define('WP_HOME', $_SERVER['HTTP_HOST']);
+    define('WP_SITEURL', $_SERVER['HTTP_HOST'] . '/wordpress');
 }
 
  define('WP_CONTENT_DIR', dirname(__FILE__) . '/wordpress-content');
