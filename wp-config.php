@@ -59,6 +59,7 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
+throw new Exception('The encryption keys here are published on github - head to https://api.wordpress.org/secret-key/1.1/salt/ to get some new ones, and paste them in to wp-config.php, removing this exception');
 define('AUTH_KEY',         '~0|M,,^L&t5)##X_086Qo$+0lP _r,FL8[i2G@?Pl+~DVE(X%~D(#V%4jO(x*H_/');
 define('SECURE_AUTH_KEY',  'rtZgdTVTcO^<<xl_az?aJYJiJ~6v1T`vUpWYAA<YLRV3o6Wm:dG:9hMu>Ui|Fk|^');
 define('LOGGED_IN_KEY',    'v2zM-&fSbskTrLEc@0y<>cuzR%g@b4F?k.rW<2Iqy-aJ`(n+6wK%)&]|iuiK=jm!');
