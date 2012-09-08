@@ -7,7 +7,7 @@ Quick summary of what I've done:
  - Wordpress itself is a submodule under /wordpress. This makes gitting, sorting out wordpress upgrades, etc much easier.
  - wp-content is not within WordPress, it's been moved to wordpress–content, which makes it possible to keep WordPress itself out of version control but still version control themes/plugins.
 
- PS: As we've got git submodules here, after cloning, please run:
+PS: As we've got git submodules here, after cloning, please run:
 
      git submodule init && git submodule update
  
