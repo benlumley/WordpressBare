@@ -1,4 +1,4 @@
-= Base Wordpress Install =
+# Base Wordpress Install
 
 This is a plain vanilla wordpress install with a few things I like on every project pre-done. I clone it to start new projects.
 
