@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+    # Hey-ho let's go!
+    RewriteEngine On
+    # Base is the URL path of the home directory
+    RewriteBase /
+    # Base goes to WordPress
+    RewriteRule ^$ /wordpress/index.php [L]
+    # Rewrite wp-admin
+    RewriteRule ^wp-admin(/.*)$ /wordpress/wp-admin/$1 [L,R]
+    # Skip real files and directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # Otherwise send it to WordPress
+    RewriteRule .* /wordpress/index.php [L]
+</IfModule>
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress
