@@ -24,6 +24,7 @@ if (strpos($_SERVER['HTTP_HOST'], 'vcap.me') || strpos($_SERVER['HTTP_HOST'], 'l
     define('DB_HOST', 'localhost');
     define('WP_DEBUG', true);
 } elseif (strpos($_SERVER['HTTP_HOST'], 'st.wpsite.co.uk')) {
+    define('ASSETS_VERSION', file_get_contents(dirname(__FILE__) . '/.htversion'));
     define('DB_NAME', 'wpsite_stage');
     define('DB_USER', 'wpsite_stage');
     define('DB_PASSWORD', '');
@@ -31,6 +32,7 @@ if (strpos($_SERVER['HTTP_HOST'], 'vcap.me') || strpos($_SERVER['HTTP_HOST'], 'l
     define('WP_DEBUG', false);
 } else {
     // these are details for use with pagoda box - replace them with actual passwords for other hosts
+    define('ASSETS_VERSION', file_get_contents(dirname(__FILE__) . '/.htversion'));
     define('DB_NAME', $_SERVER["DB1_NAME"]);
     define('DB_USER', $_SERVER["DB1_USER"]);
     define('DB_PASSWORD', $_SERVER["DB1_PASS"]);
