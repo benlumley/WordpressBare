@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#
+# Sample post merge hook - it'll put the current commit id into  file called .htversion, which we use for asset versioning
+# Filename is chosen just because it is usually already denied by apache
+#
+
+. git-sh-setup
+rm .htversion
+git rev-parse HEAD > .htversion
