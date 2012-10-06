@@ -1,9 +1,10 @@
 === Advanced Custom Fields ===
 Contributors: Elliot Condon
 Tags: custom, field, custom field, advanced, simple fields, magic fields, more fields, repeater, matrix, post, type, text, textarea, file, image, edit, admin
-Requires at least: 3.0
-Tested up to: 3.3
-Stable tag: 3.3
+Requires at least: 3.0.0
+Tested up to: 3.4.2
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Fully customise WordPress edit screens with powerful fields. Boasting a professional interface and a powerfull API, it’s a must have for any web developer working with WordPress.Field types include: Wysiwyg, text, textarea, image, file, select, checkbox, page link, post object, date picker, color picker and more!
 
@@ -74,6 +75,7 @@ http://support.advancedcustomfields.com/
 
 
 == Screenshots ==
+
 1. Creating the Advanced Custom Fields
 
 2. Adding the Custom Fields to a page and hiding the default meta boxes
@@ -84,6 +86,48 @@ http://support.advancedcustomfields.com/
 
 
 == Changelog ==
+
+= 3.5.0 =
+* [Fixed] Fix missing title of PHP registered field groups on the media edit page
+* [Added] Add revision support
+* [Added] Allow save draft to bypass validation
+* [Updated] Update Czech translation
+* [Fixed] Fix XML export issue with line break - http://support.advancedcustomfields.com/discussion/3219/export-and-import-problem-mixed-line-endings
+* [Fixed] Fix export to XML abspath issue - http://support.advancedcustomfields.com/discussion/2641/require-paths-in-export-php
+* Update location rules for post_type - http://support.advancedcustomfields.com/discussion/3251/fields-on-a-non-public-post-type 
+* Add "revisions" to list of hide-able options
+* [Fixed] Fix bug with custom post_id param in acf_form - http://support.advancedcustomfields.com/discussion/2991/acf_form-outside-loop
+* [Fixed] Fix bug in has_sub_field function where new values are not loaded for different posts if the field name is the same - http://support.advancedcustomfields.com/discussion/3331/repeater-field-templating-help-categories
+* [Updated] Allow get_field to use field_key or field_name
+* [Fixed] Fix update_field bug with nested repeaters
+* [Updated] Update German translation files - thanks to Martin Lettner
+
+= 3.4.3 =
+* [Fixed] Fix PHP registered field groups not showing via AJAX - http://support.advancedcustomfields.com/discussion/3143/exported-php-code-doesnt-work-with-post-formats
+* [Added] Add new return value for file { file object
+* [Fixed] Test / Fix save_post priority with WPML + events + shopp plugin
+* [Fixed] Fix bug where field groups don't appear on shopp product edit screens
+* [Fixed] Fix bug with image field { selecting multiple images puts first image into the .row-clone tr - http://support.advancedcustomfields.com/discussion/3157/image-field-repeater
+
+= 3.4.2 =
+* [Fixed] Fix API functions for 'user_$ID' post ID parameter
+* [Added] Color Picker Field: Default Value
+* [Added] Add custom save action for all saves - http://support.advancedcustomfields.com/discussion/2954/hook-on-save-options
+* [Updated] Update Dutch translations
+* [Updated] Update get_field_object function to allow for field_key / field_name + option to load_value
+
+= 3.4.1 =
+* [Added] Save user fields into wp_usermeta http://support.advancedcustomfields.com/discussion/2758/get_users-and-meta_key
+* [Added] Add compatibility with media tags plugin - http://support.advancedcustomfields.com/discussion/comment/7596#Comment_7596
+* [Added] Wysiwyg Field: Add Default value option
+* [Added] Number Field: Add Default value option
+* [Fixed] Validate relationship posts - http://support.advancedcustomfields.com/discussion/3033/relationship-field-throws-error-when-related-item-is-trashed
+* [Added] Allow "options" as post_id for get_fields - http://support.advancedcustomfields.com/discussion/1926/3-1-8-broke-get_fields-for-options
+* [Added] Repeater Field: Add sub field width option
+* [Added] Repeater Field: Add sub field description option
+* [Updated] Repeater Field: Update UI design
+* [Fixed] Fix missing ajax event on page parent - http://support.advancedcustomfields.com/discussion/3060/show-correct-box-based-on-page-parent
+* [Updated] Update french translation - http://support.advancedcustomfields.com/discussion/3088/french-translation-for-3-4-0
 
 = 3.4.0 =
 * [Fixed] Fix validation rules for multiple select - http://support.advancedcustomfields.com/discussion/2858/multiple-select-validation-doesnt-work

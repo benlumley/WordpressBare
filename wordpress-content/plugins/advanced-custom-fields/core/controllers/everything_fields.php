@@ -282,6 +282,12 @@ class acf_everything_fields
 	
 	function save_taxonomy( $term_id )
 	{
+		// for some weird reason, this is triggered by saving a menu... 
+		if( !isset($_POST['taxonomy']) )
+		{
+			return;
+		}
+		
 		// $post_id to save against
 		$post_id = $_POST['taxonomy'] . '_' . $term_id;
 		
@@ -381,7 +387,14 @@ class acf_everything_fields
 				// title 
 				if( $options['page_action'] == "edit" && $options['page_type'] != "media")
 				{
-					echo '<h3>' . get_the_title( $acf['id'] ) . '</h3>';
+					if ( is_numeric( $acf['id'] ) )
+				    {
+				        echo '<h3>' . get_the_title( $acf['id'] ) . '</h3>';
+				    }
+				    else
+				    {
+				        echo '<h3>' . apply_filters( 'the_title', $acf['title'] ) . '</h3>';
+				    }
 					echo '<table class="form-table">';
 				}
 				

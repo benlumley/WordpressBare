@@ -35,14 +35,24 @@ class acf_input
 		add_action('admin_print_scripts', array($this,'admin_print_scripts'));
 		add_action('admin_print_styles', array($this,'admin_print_styles'));
 		add_action('admin_head', array($this,'admin_head'));
-		add_action('save_post', array($this, 'save_post'), 20); // save later to avoid issues with 3rd party plugins
+		
+		
+		// save
+		$save_priority = 20;
+		
+		if( isset($_POST['post_type']) )
+		{
+			if( $_POST['post_type'] == "tribe_events" ){ $save_priority = 15; }
+		}
+		add_action('save_post', array($this, 'save_post'), $save_priority); // save later to avoid issues with 3rd party plugins
 		
 		
 		// custom actions (added in 3.1.8)
 		add_action('acf_head-input', array($this, 'acf_head_input'));
 		add_action('acf_print_scripts-input', array($this, 'acf_print_scripts_input'));
 		add_action('acf_print_styles-input', array($this, 'acf_print_styles_input'));
-		
+		add_action('wp_restore_post_revision', array($this, 'wp_restore_post_revision'), 10, 2 );
+		add_filter('_wp_post_revision_fields', array($this, 'wp_post_revision_fields') );
 		
 		// ajax
 		add_action('wp_ajax_acf_input', array($this, 'ajax_acf_input'));
@@ -153,7 +163,7 @@ class acf_input
 		
 		
 		// shopp
-		if( $pagenow == "admin.php" && isset( $_GET['page'] ) && $_GET['page'] == "shopp-products" && isset( $_GET['id'] ) && $_GET['id'] == "new" )
+		if( $pagenow == "admin.php" && isset( $_GET['page'] ) && $_GET['page'] == "shopp-products" && isset( $_GET['id'] ) )
 		{
 			$typenow = "shopp_product";
 		}
@@ -199,6 +209,11 @@ class acf_input
 			{
 				// hide / show
 				$show = in_array($acf['id'], $metabox_ids) ? "true" : "false";
+				$priority = 'high';
+				if( $acf['options']['position'] == 'side' )
+				{
+					$priority = 'core';
+				}
 				
 				// add meta box
 				add_meta_box(
@@ -207,9 +222,10 @@ class acf_input
 					array($this, 'meta_box_input'), 
 					$typenow, 
 					$acf['options']['position'], 
-					'core', 
+					$priority, 
 					array( 'fields' => $acf['fields'], 'options' => $acf['options'], 'show' => $show, 'post_id' => $post->ID )
 				);
+				
 			}
 			// foreach($acfs as $acf)
 		}
@@ -276,6 +292,10 @@ class acf_input
 				{
 					$html .= '#postimagediv, #screen-meta label[for=postimagediv-hide] {display: none;} ';
 				}
+				if( in_array('revisions',$acf['options']['hide_on_screen']) )
+				{
+					$html .= '#revisionsdiv, #screen-meta label[for=revisionsdiv-hide] {display: none;} ';
+				}
 				
 				
 				break;
@@ -325,7 +345,7 @@ class acf_input
 		$show = isset($args['args']['show']) ? $args['args']['show'] : "false";
 		$post_id = isset($args['args']['post_id']) ? $args['args']['post_id'] : false;
 		
-		
+
 		// defaults
 		if(!$options)
 		{
@@ -346,8 +366,6 @@ class acf_input
 			}
 			else
 			{
-				
-				
 				$this->parent->render_fields_for_input($fields, $post_id);
 			}
 		}
@@ -381,10 +399,20 @@ class acf_input
 			die();
 		}
 		
-		// get fields
-		$fields = $this->parent->get_acf_fields($options['acf_id']);
-		
-		$this->parent->render_fields_for_input($fields, $options['post_id']);
+		// get acfs
+		$acfs = $this->parent->get_field_groups();
+		if( $acfs )
+		{
+			foreach( $acfs as $acf )
+			{
+				if( $acf['id'] == $options['acf_id'] )
+				{
+					$this->parent->render_fields_for_input( $acf['fields'], $options['post_id']);
+					
+					break;
+				}
+			}
+		}
 
 		die();
 		
@@ -413,16 +441,68 @@ class acf_input
 		}
 		
 		
-		// only save once! WordPress save's a revision as well.
-		if( wp_is_post_revision($post_id) )
+		// Save revision (copy and paste of current metadata. ie: what it was)
+		$parent_id = wp_is_post_revision( $post_id );
+		if( $parent_id )
 		{
-	    	return $post_id;
+			$this->save_post_revision( $parent_id, $post_id );
         }
         
 		
 		do_action('acf_save_post', $post_id);
 	}
 	
+	
+	/*
+	*  save_post_revision
+	*
+	*  @description: simple copy and paste of fields
+	*  @since 3.4.4
+	*  @created: 4/09/12
+	*/
+	
+	function save_post_revision( $parent_id, $revision_id )
+	{
+
+		// load from post
+		if( !isset($_POST['fields']) )
+		{
+			return false;
+		}
+		
+		
+		// field data was posted. Find all values (not references) and copy / paste them over.
+		
+		global $wpdb;
+		
+		
+		// get field from postmeta
+		$rows = $wpdb->get_results( $wpdb->prepare(
+			"SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key NOT LIKE %s", 
+			$parent_id, 
+			'\_%'
+		), ARRAY_A);
+		
+		
+		if( $rows )
+		{
+			foreach( $rows as $row )
+			{
+				$wpdb->insert( 
+					$wpdb->postmeta, 
+					array(
+						'post_id' => $revision_id,
+						'meta_key' => $row['meta_key'],
+						'meta_value' => $row['meta_value']
+					)
+				);
+			}
+		}
+		
+		return true;
+	}
+	
+		
 	
 	/*--------------------------------------------------------------------------------------
 	*
@@ -618,6 +698,95 @@ html.wp-toolbar {
 		
 		do_action('acf_head-edit_attachment');
 	}
+	
+	
+	/*
+	*  wp_restore_post_revision
+	*
+	*  @description: 
+	*  @since 3.4.4
+	*  @created: 4/09/12
+	*/
+	
+	function wp_restore_post_revision( $parent_id, $revision_id )
+	{
+		global $wpdb;
+		
+		
+		// get field from postmeta
+		$rows = $wpdb->get_results( $wpdb->prepare(
+			"SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key NOT LIKE %s", 
+			$revision_id, 
+			'\_%'
+		), ARRAY_A);
+		
+		
+		if( $rows )
+		{
+			foreach( $rows as $row )
+			{
+				update_post_meta( $parent_id, $row['meta_key'], $row['meta_value'] );
+			}
+		}
+			
+	}
+	
+	
+	/*
+	*  wp_post_revision_fields
+	*
+	*  @description: 
+	*  @since 3.4.4
+	*  @created: 4/09/12
+	*/
+	
+	function wp_post_revision_fields( $fields ) {
+		
+		global $post, $wpdb, $revision, $left_revision, $right_revision, $pagenow;
+		
+		
+		if( $pagenow != "revision.php" )
+		{
+			return $fields;
+		}
+		
+		
+		// get field from postmeta
+		$rows = $wpdb->get_results( $wpdb->prepare(
+			"SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key NOT LIKE %s", 
+			$post->ID, 
+			'\_%'
+		), ARRAY_A);
+		
+		
+		if( $rows )
+		{
+			foreach( $rows as $row )
+			{
+				$fields[ $row['meta_key'] ] =  ucwords( str_replace('_', ' ', $row['meta_key']) );
+
+
+				// left vs right
+				if( isset($_GET['left']) && isset($_GET['right']) )
+				{
+					$left_revision->$row['meta_key'] = get_metadata( 'post', $_GET['left'], $row['meta_key'], true );
+					$right_revision->$row['meta_key'] = get_metadata( 'post', $_GET['right'], $row['meta_key'], true );
+				}
+				else
+				{
+					$revision->$row['meta_key'] = get_metadata( 'post', $revision->ID, $row['meta_key'], true );
+				}
+				
+			}
+		}
+		
+		
+		return $fields;
+	
+	}
+
+	
+
 	
 }
 

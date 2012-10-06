@@ -33,6 +33,10 @@ This plugin is a fork of [Update Notifier](http://wordpress.org/extend/plugins/u
 - A number of available hooks and filters for advanced users.
 - Active support and development.
 
+*Languages*
+
+- German by [Alexander Pfabel](http://alexander.pfabel.de/) - *Added 02 October 2012*
+
 == Installation ==
 
 * Unzip and upload contents to your plugins directory (usually wp-content/plugins/).

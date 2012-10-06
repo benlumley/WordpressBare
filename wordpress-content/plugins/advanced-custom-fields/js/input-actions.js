@@ -82,6 +82,20 @@ var acf = {
 	
 	
 	/*
+	*  Save Draft
+	*
+	*  @description: 
+	*  @created: 18/09/12
+	*/
+	var save_post = false;
+	$('#save-post').live('click', function(){
+		
+		save_post = true;
+		
+	});
+	
+	
+	/*
 	*  Submit form
 	*
 	*  @description: does validation, deletes all hidden metaboxes (otherwise, post data will be overriden by hidden inputs)
@@ -90,24 +104,30 @@ var acf = {
 	
 	$('form#post').live("submit", function(){
 		
-		// do validation
-		do_validation();
-		
-		if(acf.validation == false)
+		if( !save_post )
 		{
-			// show message
-			$(this).siblings('#message').remove();
-			$(this).before('<div id="message" class="error"><p>' + acf.text.validation_error + '</p></div>');
+			// do validation
+			do_validation();
 			
 			
-			// hide ajax stuff on submit button
-			$('#publish').removeClass('button-primary-disabled');
-			$('#ajax-loading').attr('style','');
-			
-			return false;
+			if(acf.validation == false)
+			{
+				// show message
+				$(this).siblings('#message').remove();
+				$(this).before('<div id="message" class="error"><p>' + acf.text.validation_error + '</p></div>');
+				
+				
+				// hide ajax stuff on submit button
+				$('#publish').removeClass('button-primary-disabled');
+				$('#ajax-loading').attr('style','');
+				
+				return false;
+			}
 		}
-		
+
+
 		$('.acf_postbox:hidden').remove();
+		
 		
 		// submit the form
 		return true;
@@ -376,7 +396,7 @@ var acf = {
 		// vars
 		var div = $(this).closest('.acf-file-uploader');
 		
-		div.removeClass('active').find('input.value').val('');
+		div.removeClass('active').find('input.value').val('').trigger('change');
 		
 		return false;
 		
@@ -433,7 +453,7 @@ var acf = {
 		var div = $(this).closest('.acf-image-uploader');
 		
 		div.removeClass('active');
-		div.find('input.value').val('');
+		div.find('input.value').val('').trigger('change');
 		div.find('img').attr('src', '');
 		
 		return false;
@@ -922,12 +942,37 @@ var acf = {
 				max_rows = parseInt( repeater.attr('data-max_rows') );	
 			
 			
-			// move row-clone to be the first element (to avoid double border css bug)
-			var row_clone = repeater.find('> table > tbody > tr.row-clone');
-			
-			if( row_clone.index() != 0 )
+			// set column widths
+			if( ! repeater.find('> table').hasClass('row_layout') )
 			{
-				row_clone.closest('tbody').prepend( row_clone );
+				// accomodate for order / remove th widths
+				var column_width = 93;
+				
+				// find columns that already have a width and remove these amounts from the column_width var
+				repeater.find('> table > thead > tr > th[width]').each(function( i ){
+					
+					column_width -= parseInt( $(this).attr('width') );
+				});
+
+				
+				var ths = repeater.find('> table > thead > tr th').not('[width]').has('span');
+				if( ths.length > 1 )
+				{
+					column_width = column_width / ths.length;
+					
+					ths.each(function( i ){
+						
+						// dont add width to last th
+						if( (i+1) == ths.length  )
+						{
+							return;
+						}
+						
+						$(this).attr('width', column_width + '%');
+						
+					});
+				}
+				
 			}
 			
 			
@@ -999,14 +1044,12 @@ var acf = {
 		
 		
 		// add row
-		if( before )
+		if( !before )
 		{
-			before.before( new_field );
+			before = repeater.find('> table > tbody > .row-clone');
 		}
-		else
-		{
-			repeater.find('> table > tbody').append(new_field); 
-		}
+		
+		before.before( new_field );
 		
 		
 		// trigger mouseenter on parent repeater to work out css margin on add-row button
