@@ -1,3 +1,4 @@
 .vagrant
 wordpress-content/uploads/*
 .sass-cache
+.htversion
