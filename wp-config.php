@@ -17,29 +17,29 @@
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
 
-if (strpos($_SERVER['HTTP_HOST'], 'vcap.me')) {
+if (strpos($_SERVER['HTTP_HOST'], 'vcap.me') || strpos($_SERVER['HTTP_HOST'], 'localtunnel.com')) {
     define('DB_NAME', 'wpsite');
     define('DB_USER', 'root');
     define('DB_PASSWORD', '');
     define('DB_HOST', 'localhost');
-    define('WP_HOME', 'http://wpsite.vcap.me:8080');
-    define('WP_SITEURL', 'http://wpsite.vcap.me:8080/wordpress');
+    define('WP_DEBUG', true);
 } elseif (strpos($_SERVER['HTTP_HOST'], 'st.wpsite.co.uk')) {
     define('DB_NAME', 'wpsite_stage');
     define('DB_USER', 'wpsite_stage');
     define('DB_PASSWORD', '');
     define('DB_HOST', 'localhost');
-    define('WP_HOME', 'http://test.wpsite.co.uk');
-    define('WP_SITEURL', 'http://test.wpsite.co.uk/wordpress');
+    define('WP_DEBUG', false);
 } else {
-    // these are details for use with pagoda box
+    // these are details for use with pagoda box - replace them with actual passwords for other hosts
     define('DB_NAME', $_SERVER["DB1_NAME"]);
     define('DB_USER', $_SERVER["DB1_USER"]);
     define('DB_PASSWORD', $_SERVER["DB1_PASS"]);
     define('DB_HOST', $_SERVER["DB1_HOST"]);
-    define('WP_HOME', 'http://' . $_SERVER['HTTP_HOST']);
-    define('WP_SITEURL', 'http://' . $_SERVER['HTTP_HOST'] . '/wordpress');
+    define('WP_DEBUG', false);
 }
+
+define('WP_HOME', 'http://' . $_SERVER['HTTP_HOST']);
+define('WP_SITEURL', 'http://' . $_SERVER['HTTP_HOST'] . '/wordpress');
 
  define('WP_CONTENT_DIR', dirname(__FILE__) . '/wordpress-content');
  define('WP_CONTENT_URL', WP_HOME . '/wordpress-content');
@@ -88,15 +88,6 @@ $table_prefix  = 'wp_';
  * language support.
  */
 define('WPLANG', '');
-
-/**
- * For developers: WordPress debugging mode.
- *
- * Change this to true to enable the display of notices during development.
- * It is strongly recommended that plugin and theme developers use WP_DEBUG
- * in their development environments.
- */
-define('WP_DEBUG', false);
 
 /* That's all, stop editing! Happy blogging. */
 
