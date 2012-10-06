@@ -24,9 +24,7 @@ Vagrant::Config.run do |config|
   
   config.vm.customize ["modifyvm", :id, "--rtcuseutc", "on"]
 
-  config.vm.customize do |vm|
-    vm.memory_size = 512
-  end
+  config.vm.customize ["modifyvm", :id, "--memory", 512]
 
 end
 
