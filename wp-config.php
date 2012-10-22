@@ -17,13 +17,13 @@
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
 
-if (strpos($_SERVER['HTTP_HOST'], 'vcap.me') || strpos($_SERVER['HTTP_HOST'], 'localtunnel.com')) {
+if (strpos(__FILE__, 'vagrant/') || strpos($_SERVER['HTTP_HOST'], 'vcap.me') || strpos($_SERVER['HTTP_HOST'], 'localtunnel.com')) {
     define('DB_NAME', 'wpsite');
     define('DB_USER', 'root');
     define('DB_PASSWORD', '');
     define('DB_HOST', 'localhost');
     define('WP_DEBUG', true);
-} elseif (strpos($_SERVER['HTTP_HOST'], 'st.wpsite.co.uk')) {
+} elseif (strpos(__FILE__, 'st.wpsite.co.uk') || strpos($_SERVER['HTTP_HOST'], 'st.wpsite.co.uk')) {
     define('ASSETS_VERSION', file_get_contents(dirname(__FILE__) . '/.htversion'));
     define('DB_NAME', 'wpsite_stage');
     define('DB_USER', 'wpsite_stage');
@@ -43,8 +43,11 @@ if (strpos($_SERVER['HTTP_HOST'], 'vcap.me') || strpos($_SERVER['HTTP_HOST'], 'l
 define('WP_HOME', 'http://' . $_SERVER['HTTP_HOST']);
 define('WP_SITEURL', 'http://' . $_SERVER['HTTP_HOST'] . '/wordpress');
 
- define('WP_CONTENT_DIR', dirname(__FILE__) . '/wordpress-content');
- define('WP_CONTENT_URL', WP_HOME . '/wordpress-content');
+define('WP_CONTENT_DIR', dirname(__FILE__) . '/wordpress-content');
+define('WP_CONTENT_URL', WP_HOME . '/wordpress-content');
+
+// if you have the cli cron script (or some other automated mechanism) cronned - this will disable wp's page load cron from running
+// define('DISABLE_WP_CRON', true);
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');

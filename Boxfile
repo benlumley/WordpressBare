@@ -1,7 +1,25 @@
 web1: 
-  name: wp-site 
-  shared_writable_dirs:
-    - wordpress-content/uploads/
+    name: wp-site 
+    shared_writable_dirs:
+        - wordpress-content/uploads/
+    after_build:
+# lines below replace .htaccess with another version, using an environment var set in pagoda admin, allowing per site config tweaks
+#        - rm /var/www/.htaccess 
+#        - mv /var/www/.htaccess.$APP_ENV /var/www/.htaccess
+        - git rev-parse HEAD > .htversion
+    php_extensions:
+        - apc
+        - curl
+        - gd
+        - mbstring
+        - mysql
+        - simplexml
+        - xml
+    php_display_errors: "0"
+    php_date_timezone: "Europe/London"
+    php_default_locale: "en_GB"
+    php_upload_max_filesize: "8M"
+    php_post_max_size: "8M"
 
 db1:
   name: wpsite-prod
