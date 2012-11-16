@@ -1,6 +1,6 @@
 # Base Wordpress Install
 
-This is a plain vanilla wordpress install with the folder structure and some plugins I like to use on evert project pre-installed. I clone it to start new projects.
+This is a plain vanilla wordpress install with the folder structure and some plugins I like to use on every project pre-installed. I clone it to start new projects.
 
 Quick summary of what I've done:
 
@@ -11,14 +11,14 @@ Quick summary of what I've done:
 PS: As we've got git submodules here, after cloning, please run:
 
      git submodule init && git submodule update
- 
+
 ## Vagrant
 
 If you don't know what vagrant is - it's a tool for automating the creation and configuration of virtual machines for development - see http://vagrantup.com/
 
 If you don't want to use vagrant - ignore this section. You can delete the .puppet folder and the file called Vagrantfile.
 
-If you do want to use vagrant... This repo has got my VagrantPuppet repo in as a submodule, and includes a vagrantfile. 
+If you do want to use vagrant... This repo has got my VagrantPuppet repo in as a submodule, and includes a vagrantfile.
 
 You should be able to clone this repo, run 'vagrant up', and have a dev environment ready to go - accessible at http://wpsite.vcap.me:8080/
 
