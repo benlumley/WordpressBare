@@ -115,6 +115,19 @@ class acf_Field
 		$value = stripslashes_deep($value);
 		
 		
+		// apply filters
+		$value = apply_filters('acf_update_value', $value, $field, $post_id );
+		
+		$keys = array('type', 'name', 'key');
+		foreach( $keys as $key )
+		{
+			if( isset($field[ $key ]) )
+			{
+				$value = apply_filters('acf_update_value-' . $field[ $key ], $value, $field, $post_id);
+			}
+		}
+				
+		
 		// if $post_id is a string, then it is used in the everything fields and can be found in the options table
 		if( is_numeric($post_id) )
 		{
@@ -140,20 +153,36 @@ class acf_Field
 	}
 	
 	
-	/*--------------------------------------------------------------------------------------
+	/*
+	*  delete_value
 	*
-	*	pre_save_field
-	*	- called just before saving the field to the database.
-	*
-	*	@author Elliot Condon
-	*	@since 2.2.0
-	* 
-	*-------------------------------------------------------------------------------------*/
+	*  @description: 
+	*  @since: 3.5.8
+	*  @created: 19/01/13
+	*/
 	
-	function pre_save_field($field)
+	function delete_value($post_id, $key)
 	{
-		return $field;
+		// if $post_id is a string, then it is used in the everything fields and can be found in the options table
+		if( is_numeric($post_id) )
+		{
+			delete_post_meta( $post_id, $key );
+			delete_post_meta( $post_id, '_' . $key );
+		}
+		elseif( strpos($post_id, 'user_') !== false )
+		{
+			$post_id = str_replace('user_', '', $post_id);
+			delete_user_meta( $post_id, $key );
+			delete_user_meta( $post_id, '_' . $key );
+		}
+		else
+		{
+			delete_option( $post_id . '_' . $key );
+			delete_option( '_' . $post_id . '_' . $key );
+		}
+		
 	}
+	
 	
 	
 	/*--------------------------------------------------------------------------------------
@@ -235,7 +264,21 @@ class acf_Field
 		
 		// if value was duplicated, it may now be a serialized string!
 		$value = maybe_unserialize($value);
-
+		
+		
+		// apply filters
+		$value = apply_filters('acf_load_value', $value, $field, $post_id );
+		
+		$keys = array('type', 'name', 'key');
+		foreach( $keys as $key )
+		{
+			if( isset($field[ $key ]) )
+			{
+				$value = apply_filters('acf_load_value-' . $field[ $key ], $value, $field, $post_id);
+			}
+		}
+		
+		
 		
 		return $value;
 	}

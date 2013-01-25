@@ -4,7 +4,7 @@ Plugin Name: WP Updates Notifier
 Plugin URI: http://l3rady.com/projects/wp-updates-notifier/
 Description: Sends email to notify you if there are any updates for your WordPress site. Can notify about core, plugin and theme updates.
 Author: Scott Cariss
-Version: 1.3.1
+Version: 1.3.2
 Author URI: http://l3rady.com/
 Text Domain: wp-updates-notifier
 Domain Path: /languages
@@ -198,6 +198,7 @@ if (!class_exists('sc_WPUpdatesNotifier')) {
          * @return bool
          */
 		protected function core_update_check(&$message) {
+            global $wp_version;
             $settings = get_option(self::$options_field); // get settings
 			do_action("wp_version_check"); // force WP to check its core for updates
 			$update_core = get_site_transient("update_core"); // get information of updates
@@ -228,6 +229,8 @@ if (!class_exists('sc_WPUpdatesNotifier')) {
          * @return bool
          */
 		protected function plugins_update_check(&$message, $allOrActive) {
+            global $wp_version;
+            $cur_wp_version = preg_replace('/-.*$/', '', $wp_version);
             $settings = get_option(self::$options_field); // get settings
 			do_action("wp_update_plugins"); // force WP to check plugins for updates
 			$update_plugins = get_site_transient('update_plugins'); // get information of updates

@@ -21,23 +21,6 @@ class acf_Date_picker extends acf_Field
 		$this->title = __("Date Picker",'acf');
 		
    	}
-   	
-	
-	/*--------------------------------------------------------------------------------------
-	*
-	*	admin_head
-	*
-	*	@author Elliot Condon
-	*	@since 2.0.6
-	* 
-	*-------------------------------------------------------------------------------------*/
-	
-	function admin_head()
-	{
-		// add datepicker
-		echo '<link rel="stylesheet" type="text/css" href="'.$this->parent->dir.'/core/fields/date_picker/style.date_picker.css" />';
-		echo '<script type="text/javascript" src="'.$this->parent->dir.'/core/fields/date_picker/jquery.ui.datepicker.js" ></script>';
-	}
 	
 	
 	/*--------------------------------------------------------------------------------------
@@ -115,7 +98,7 @@ class acf_Date_picker extends acf_Field
 			<td class="label">
 				<label><?php _e("Display format",'acf'); ?></label>
 				<p class="description"><?php _e("This format will be seen by the user when entering a value",'acf'); ?></p>
-				<p><?php _e("\"dd/mm/yy\" or \"mm/dd/yy\" are the most used display formats. Read more about",'acf'); ?> <a href="http://docs.jquery.com/UI/Datepicker/formatDate"><?php _e("jQuery date formats",'acf'); ?></a></p>
+				<p><?php _e("\"dd/mm/yy\" or \"mm/dd/yy\" are the most used display formats. Read more about",'acf'); ?> <a href="http://docs.jquery.com/UI/Datepicker/formatDate" target="_blank"><?php _e("jQuery date formats",'acf'); ?></a></p>
 			</td>
 			<td>
 				<input type="text" name="fields[<?php echo $key; ?>][display_format]" value="<?php echo $field['display_format']; ?>" />

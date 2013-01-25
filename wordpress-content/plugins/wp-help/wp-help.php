@@ -2,7 +2,7 @@
 /*
 Plugin Name: WP Help
 Description: Administrators can create detailed, hierarchical documentation for the site's authors and editors, viewable in the WordPress admin.
-Version: 1.1
+Version: 1.2
 License: GPL
 Plugin URI: http://txfx.net/wordpress-plugins/wp-help/
 Author: Mark Jaquith
@@ -46,6 +46,9 @@ class CWS_WP_Help_Plugin {
 	}
 
 	public function init() {
+		// Translations
+		load_plugin_textdomain( 'wp-help', false, basename( dirname( __FILE__ ) ) . '/languages' );
+
 		// Options
 		$raw_options = get_option( self::OPTION );
 		if ( !is_array( $raw_options ) )
@@ -62,9 +65,6 @@ class CWS_WP_Help_Plugin {
 		// Cron job
 		if ( !wp_next_scheduled( self::CRON_HOOK ) )
 			wp_schedule_event( current_time( 'timestamp' ), 'daily', self::CRON_HOOK );
-
-		// Translations
-		load_plugin_textdomain( 'wp-help', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
 		// Actions and filters
 		add_action( self::CRON_HOOK,                array( $this, 'api_slurp'             )        );
@@ -248,23 +248,31 @@ class CWS_WP_Help_Plugin {
 	}
 
 	public function load_post() {
-		if ( isset( $_GET['post'] ) ) {
-			if ( self::POST_TYPE === get_post_type( $_GET['post'] ) ) {
-				wp_enqueue_script( 'jquery' );
-				add_action( 'admin_footer', array( $this, 'add_manage_link' ) );
-			}
-		}
+		if ( isset( $_GET['post'] ) && self::POST_TYPE === get_post_type( $_GET['post'] ) )
+			$this->edit_enqueues();
 	}
 
 	public function load_post_new() {
-		if ( isset( $_GET['post_type'] ) && self::POST_TYPE === $_GET['post_type'] ) {
-			wp_enqueue_script( 'jquery' );
-			add_action( 'admin_footer', array( $this, 'add_manage_link' ) );
-		}
+		if ( isset( $_GET['post_type'] ) && self::POST_TYPE === $_GET['post_type'] )
+			$this->edit_enqueues();
 	}
 
-	public function add_manage_link() {
-		?><script>(function($){var a=$('.wrap:first h2:first a:first');var i=' <a href="edit.php?post_type=<?php echo self::POST_TYPE; ?>" class="add-new-h2"><?php echo esc_js( _x( 'Manage', 'verb. Button with limited space', 'wp-help' ) ); ?></a> ';if(a.length)a.before(i);else $('.wrap:first h2:first').append(i);})(jQuery);</script><?php
+	private function edit_enqueues() {
+		wp_enqueue_script( 'jquery' );
+		add_action( 'admin_footer', array( $this, 'edit_page_js' ) );
+	}
+
+	public function edit_page_js() {
+		?><script>(function($){
+			var a = $('.wrap:first h2:first a:first'), i = ' <a href="edit.php?post_type=<?php echo self::POST_TYPE; ?>" class="add-new-h2"><?php echo esc_js( _x( 'Manage', 'verb. Button with limited space', 'wp-help' ) ); ?></a> ';
+			if ( a.length )
+				a.before(i);
+			else
+				$('.wrap:first h2:first').append(i);
+			$('#parent_id').detach().insertAfter( '.misc-pub-section:last' ).wrap('<div class="misc-pub-section"></div>').before( '<?php echo esc_js( __( 'Parent:', 'wp-help' ) ); ?> ' ).css( 'max-width', '80%' );
+			$('#pageparentdiv').hide();
+			$('#screen-options-wrap #pageparentdiv-hide').parent('label').hide();
+			})(jQuery);</script><?php
 	}
 
 	public function map_meta_cap( $caps, $cap, $user_id, $args ) {
@@ -460,7 +468,7 @@ class CWS_WP_Help_Plugin {
 	}
 
 	public function ajax_settings() {
-		if ( current_user_can( 'manage_options' ) && isset( $_POST['nonce'] ) && wp_verify_nonce( $_POST['nonce'], 'cws-wp-help-settings' ) ) {
+		if ( current_user_can( 'manage_options' ) && check_ajax_referer( 'cws-wp-help-settings' ) ) {
 			$error = false;
 			$refresh = false;
 			$old_menu_location = $this->options['menu_location'];
@@ -481,13 +489,13 @@ class CWS_WP_Help_Plugin {
 			if ( !$error )
 				$this->options['menu_location'] = stripslashes( $_POST['menu_location'] );
 			$this->update_options( $this->options );
-			$result = array( 
+			$result = array(
 				'slurp_url' => $this->options['slurp_url'],
 				'error' => $error
 			);
 			if ( $refresh ) {
 				$this->api_slurp();
-				$result['topics'] = $this->get_help_topics_html();
+				$result['topics'] = $this->get_help_topics_html( true );
 			} elseif ( !empty( $this->options['slurp_url'] ) ) {
 				// It didn't change, but we should trigger an update in the background
 				wp_schedule_single_event( current_time( 'timestamp' ), self::CRON_HOOK );
@@ -499,7 +507,7 @@ class CWS_WP_Help_Plugin {
 	}
 
 	public function ajax_reorder() {
-		if ( current_user_can( $this->get_cap( 'publish_posts' ) ) && isset( $_POST['nonce'] ) && wp_verify_nonce( $_POST['nonce'], 'cws-wp-help-reorder' ) ) {
+		if ( current_user_can( $this->get_cap( 'publish_posts' ) ) && check_ajax_referer( 'cws-wp-help-reorder' ) ) {
 			$order = array();
 			foreach( $_POST['order'] as $o ) {
 				$order[] = str_replace( 'page-', '', $o );
@@ -599,9 +607,9 @@ class CWS_WP_Help_Plugin {
 	}
 
 	public function enqueue() {
-		$suffix = defined ('SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.dev' : '';
+		$suffix = defined ('SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		wp_enqueue_style( 'cws-wp-help', plugins_url( "css/wp-help$suffix.css", __FILE__ ), array(), '20120721b' );
-		wp_enqueue_script( 'cws-wp-help', plugins_url( "js/wp-help$suffix.js", __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ), '20120721b' );
+		wp_enqueue_script( 'cws-wp-help', plugins_url( "js/wp-help$suffix.js", __FILE__ ), array( 'jquery', 'jquery-ui-sortable' ), '20120829' );
 		do_action( 'cws_wp_help_load' ); // Use this to enqueue your own styles for things like shortcodes.
 	}
 
@@ -622,8 +630,9 @@ class CWS_WP_Help_Plugin {
 			return $link;
 	}
 
-	private function get_help_topics_html() {
-		$this->filter_wp_list_pages = true;
+	private function get_help_topics_html( $with_sort_handles = false ) {
+		if ( $with_sort_handles )
+			$this->filter_wp_list_pages = true;
 		$output = trim( wp_list_pages( array( 'post_type' => self::POST_TYPE, 'hierarchical' => true, 'echo' => false, 'title_li' => '' ) ) );
 		$this->filter_wp_list_pages = false;
 		return $output;

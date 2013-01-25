@@ -104,7 +104,7 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 		
 			$errorHandler = __( 'Database Backup Completed.', $this->hook );
 			
-			$bwpsoptions['backup_last'] = time();
+			$bwpsoptions['backup_last'] = current_time( 'timestamp' );
 			$bwpsoptions['initial_backup'] = 1;
 				
 			update_option( $this->primarysettings, $bwpsoptions );
@@ -206,18 +206,6 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 				$bwpsoptions['st_loginerror'] = 1;
 				$bwpsoptions['oneclickchosen'] = 1;
 				
-				if ( $bwpsmemlimit >= 128 ) {
-				
-					$bwpsoptions['id_fileenabled'] = 1;
-					$bwps_filecheck = true;
-				
-				} else {
-				
-					$bwps_filecheck = false;
-				
-				}
-				
-				update_option( 'bwps_filecheck', $bwps_filecheck );
 				update_option( $this->primarysettings, $bwpsoptions );
 				
 				$errorHandler = __( 'Settings Saved. Your website is now protected from most attacks.', $this->hook );
@@ -335,9 +323,7 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 			
 			//validate options
 			$bwpsoptions['am_enabled'] = ( isset( $_POST['am_enabled'] ) && $_POST['am_enabled'] == 1  ? 1 : 0 );
-			if ( $bwpsoptions['am_enabled'] == 1 ) {
-				update_option( 'bwps_awaymode', 1 );
-			}
+			
 			$bwpsoptions['am_type'] = ( isset( $_POST['am_type'] ) && $_POST['am_type'] == 1  ? 1 : 0 );
 						
 			//form times
@@ -371,9 +357,25 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 			$bwpsoptions['am_endtime'] = $endTime;
 			
 			if ( ! is_wp_error( $errorHandler ) ) {
+
 				update_option( $this->primarysettings, $bwpsoptions );
+
+				if ( $bwpsoptions['st_writefiles'] == 1  ) {
+				
+					$this->writewpconfig(); //save to wp-config.php
+					
+				} else {
+				
+					if ( ! is_wp_error( $errorHandler ) ) {
+						$errorHandler = new WP_Error();
+					}
+							
+					$errorHandler->add( '2', __( 'Settings Saved. You will have to manually add code to your wp-config.php file See the Better WP Security Dashboard for the code you will need.', $this->hook ) );
+				
+				}
+
 			}
-						
+			
 			$bwps->clearcache( true );
 			$this-> showmessages( $errorHandler ); //finally show messages
 			
@@ -498,6 +500,11 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 				}
 				
 			}
+
+			if ( sizeof( $list ) > 1 ) {
+				sort( $list );
+				$list = array_unique( $list, SORT_STRING );
+			}
 			
 			$bwpsoptions['bu_banlist'] = implode( PHP_EOL, $list );
 			
@@ -517,27 +524,19 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 			
 			if ( ! empty( $banagents ) ) {
 			
-				foreach ($banagents as $agent) {
+				foreach ( $banagents as $agent ) {
 					
-					$text = sanitize_text_field( $agent );
-					
-					//make sure user agents are alpha-numeric
-					if ( ctype_alnum( $text ) ) {
-					
-						$agents[] = $text;
-						
-					} elseif ( strlen( $text ) > 0 ) {
-					
-						if ( ! is_wp_error( $errorHandler) ) {
-							$errorHandler = new WP_Error();
-						}
-						
-						$errorHandler->add( '1', filter_var( $text, FILTER_SANITIZE_STRING ) . __( ' is not a valid user agent. Please try again.', $this->hook ) );
-						
-					}
+					$text = quotemeta( sanitize_text_field( $agent ) );
+
+					$agents[] = $text;
 					
 				}
 			
+			}
+
+			if ( sizeof( $agents ) > 1 ) {
+				sort( $agents );
+				$agents = array_unique( $agents, SORT_STRING );
 			}
 			
 			$bwpsoptions['bu_banagent'] = implode( PHP_EOL, $agents );
@@ -551,6 +550,8 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 					$this->writehtaccess();
 					
 					$errorHandler = __( 'Settings Saved.', $this->hook );
+
+					define( 'BWPS_GOOD_LIST', true );
 						
 				} else { //not on apache to let them know they will have to manually enter rules
 				
@@ -706,7 +707,7 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 		
 			$errorHandler = __( 'Database Backup Completed.', $this->hook );
 			
-			$bwpsoptions['backup_last'] = time();
+			$bwpsoptions['backup_last'] = current_time( 'timestamp' );
 				
 			update_option( $this->primarysettings, $bwpsoptions );
 			
@@ -765,7 +766,7 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 					
 				if ( $bwpsoptions['backup_last'] == '' ) { //don't run a new backup until we need it to reduce load
 				
-					$bwpsoptions['backup_next'] = ( time() + $next );
+					$bwpsoptions['backup_next'] = ( current_time( 'timestamp' ) + $next );
 				
 				} else {
 				
@@ -1001,7 +1002,7 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 			$bwpsoptions['hb_register'] = sanitize_text_field( $_POST['hb_register'] );
 			
 			//generate a secret key (if there isn't one already)
-			if ( $bwpsoptions['hb_key'] == '' ) {
+			if ( $bwpsoptions['hb_key'] == '' || ( isset( $_POST['hb_getnewkey'] ) && $_POST['hb_getnewkey'] == 1 ) ) {
 				$bwpsoptions['hb_key'] = $this->hidebe_genKey();
 			}
 			
@@ -1042,7 +1043,7 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 			
 			$errorHandler = __( 'File Check Complete.', $this->hook );
 				
-			$bwpsoptions['id_filechecktime'] = time();
+			$bwpsoptions['id_filechecktime'] = current_time( 'timestamp' );
 					
 			update_option( $this->primarysettings, $bwpsoptions );
 				
@@ -1077,7 +1078,6 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 			$bwpsoptions['id_fileincex'] = ( isset( $_POST['id_fileincex'] ) && $_POST['id_fileincex'] == 1  ? 1 : 0 );
 			$bwpsoptions['id_filedisplayerror'] = ( isset( $_POST['id_filedisplayerror'] ) && $_POST['id_filedisplayerror'] == 1  ? 1 : 0 );
 			$bwpsoptions['id_filechecktime'] = '';
-			$bwps_filecheck = $bwpsoptions['id_fileenabled'] == 1 ? true : false;
 			
 			if ( is_email( $_POST['id_fileemailaddress'] ) ) {
 			
@@ -1261,7 +1261,21 @@ if ( ! class_exists( 'bwps_admin_process' ) ) {
 			
 			if ( ! is_wp_error( $errorHandler ) ) {
 				update_option( $this->primarysettings, $bwpsoptions );
-				update_option( 'bwps_filecheck', $bwps_filecheck );
+
+				if ( $bwpsoptions['st_writefiles'] == 1  ) {
+				
+					$this->writewpconfig(); //save to wp-config.php
+					
+				} else {
+				
+					if ( ! is_wp_error( $errorHandler ) ) {
+						$errorHandler = new WP_Error();
+					}
+							
+					$errorHandler->add( '2', __( 'Settings Saved. You will have to manually add code to your wp-config.php file See the Better WP Security Dashboard for the code you will need.', $this->hook ) );
+				
+				}
+
 			}
 						
 			$bwps->clearcache( true );

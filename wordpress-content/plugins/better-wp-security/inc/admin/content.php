@@ -423,7 +423,7 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 		
 			global $bwpsoptions, $bwpstabs;
 		
-			if ( $bwpsoptions['id_fileenabled'] == 1 && get_option( 'bwps_filecheck' ) == true ) {
+			if ( $bwpsoptions['id_fileenabled'] == 1 && defined( 'BWPS_FILECHECK' ) && BWPS_FILECHECK === true ) {
 			
 				$this->admin_page( 
 					$this->pluginname . ' - ' . __( 'Intrusion Detection', $this->hook ),
@@ -1212,7 +1212,7 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 		function awaymode_content_1() {
 			?>
 			<p><?php _e( 'As many of us update our sites on a general schedule it is not always necessary to permit site access all of the time. The options below will disable the backend of the site for the specified period. This could also be useful to disable site access based on a schedule for classroom or other reasons.', $this->hook ); ?></p>
-			<p><?php _e( 'Please note that according to your', $this->hook ); ?> <a href="options-general.php"><?php _e( 'WordPress timezone settings', $this->hook ); ?></a> <?php _e( 'your local time is', $this->hook ); ?> <strong><em><?php echo date( 'l, F jS, Y \a\\t g:i a', strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s',time() ) ) ) ); ?></em></strong>. <?php _e( 'If this is incorrect please correct it on the', $this->hook ); ?> <a href="options-general.php"><?php _e( 'WordPress general settings page', $this->hook ); ?></a> <?php _e( 'by setting the appropriate time zone. Failure to do so may result in unintended lockouts.', $this->hook ); ?></p>
+			<p><?php _e( 'Please note that according to your', $this->hook ); ?> <a href="options-general.php"><?php _e( 'WordPress timezone settings', $this->hook ); ?></a> <?php _e( 'your local time is', $this->hook ); ?> <strong><em><?php echo date( 'l, F jS, Y \a\\t g:i a', current_time( 'timestamp' ) ); ?></em></strong>. <?php _e( 'If this is incorrect please correct it on the', $this->hook ); ?> <a href="options-general.php"><?php _e( 'WordPress general settings page', $this->hook ); ?></a> <?php _e( 'by setting the appropriate time zone. Failure to do so may result in unintended lockouts.', $this->hook ); ?></p>
 			<?php
 		}
 		
@@ -1235,7 +1235,7 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 			<input type="hidden" name="bwps_page" value="awaymode_1" />
 			<?php 
 				//get saved options
-				$cDate = strtotime( date( 'n/j/y 12:00 \a\m', time() ) );
+				$cDate = strtotime( date( 'n/j/y 12:00 \a\m', current_time( 'timestamp' ) ) );
 				$sTime = $bwpsoptions['am_starttime'];
 				$eTime = $bwpsoptions['am_endtime'];
 				$sDate = $bwpsoptions['am_startdate'];
@@ -1259,8 +1259,8 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 					
 				} else {
 				
-					$sDate = strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', time() + 86400) ) );
-					$eDate = strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', time() + ( 86400 * 2 ) ) ) );
+					$sDate = current_time( 'timestamp' ) + 86400;
+					$eDate = current_time( 'timestamp' ) + ( 86400 * 2 );
 					$smdisplay = date( 'n', $sDate );
 					$sddisplay = date( 'j', $sDate );
 					$sydisplay = date( 'Y', $sDate );
@@ -1304,7 +1304,7 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 										} else {
 											$selected = '';
 										}
-										echo '<option value="' . $i . '"' . $selected . '>' . date( 'F', strtotime( $i . '/1/' . date( 'Y', time() ) ) ) . '</option>';
+										echo '<option value="' . $i . '"' . $selected . '>' . date( 'F', strtotime( $i . '/1/' . date( 'Y', current_time( 'timestamp' ) ) ) ) . '</option>';
 									}
 								?>
 							</select> 
@@ -1316,13 +1316,13 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 										} else {
 											$selected = '';
 										}
-										echo '<option value="' . $i . '"' . $selected . '>' . date( 'jS', strtotime( '1/' . $i . '/' . date( 'Y', time() ) ) ) . '</option>';
+										echo '<option value="' . $i . '"' . $selected . '>' . date( 'jS', strtotime( '1/' . $i . '/' . date( 'Y', current_time( 'timestamp' ) ) ) ) . '</option>';
 									}
 								?>
 							</select>, 
 							<select name="am_startyear">
 								<?php
-									for ( $i = date( 'Y', time() ); $i < ( date( 'Y', time() ) + 2 ); $i++ ) { //determine default
+									for ( $i = date( 'Y', current_time( 'timestamp' ) ); $i < ( date( 'Y', current_time( 'timestamp' ) ) + 2 ); $i++ ) { //determine default
 										if ( $sydisplay == $i ) {
 											$selected = ' selected';
 										} else {
@@ -1349,7 +1349,7 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 										} else {
 											$selected = '';
 										}
-										echo '<option value="' . $i . '"' . $selected . '>' . date( 'F', strtotime( $i . '/1/' . date( 'Y', time() ) ) ) . '</option>';
+										echo '<option value="' . $i . '"' . $selected . '>' . date( 'F', strtotime( $i . '/1/' . date( 'Y', current_time( 'timestamp' ) ) ) ) . '</option>';
 									}
 								?>
 							</select> 
@@ -1361,13 +1361,13 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 										} else {
 											$selected = '';
 										}
-										echo '<option value="' . $i . '"' . $selected . '>' . date( 'jS', strtotime( '1/' . $i . '/' . date( 'Y', time() ) ) ) . '</option>';
+										echo '<option value="' . $i . '"' . $selected . '>' . date( 'jS', strtotime( '1/' . $i . '/' . date( 'Y', current_time( 'timestamp' ) ) ) ) . '</option>';
 									}
 								?>
 							</select>, 
 							<select name="am_endyear">
 								<?php
-									for ( $i = date( 'Y', time() ); $i < ( date( 'Y', time() ) + 2 ); $i++ ) { //determine default
+									for ( $i = date( 'Y', current_time( 'timestamp' ) ); $i < ( date( 'Y', current_time( 'timestamp' ) ) + 2 ); $i++ ) { //determine default
 										if ( $eydisplay == $i ) {
 											$selected = ' selected';
 										} else {
@@ -1565,7 +1565,7 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 							<label for "bu_banlist"><?php _e( 'Ban Hosts', $this->hook ); ?></label>
 						</th>
 						<td class="settingfield">
-							<textarea id="bu_banlist" rows="10" cols="50" name="bu_banlist"><?php echo isset( $_POST['bu_banlist'] ) ? filter_var( $_POST['bu_banlist'], FILTER_SANITIZE_STRING ) : $bwpsoptions['bu_banlist']; ?></textarea>
+							<textarea id="bu_banlist" rows="10" cols="50" name="bu_banlist"><?php echo isset( $_POST['bu_banlist'] ) && BWPS_GOOD_LIST !== true ? filter_var( $_POST['bu_banlist'], FILTER_SANITIZE_STRING ) : $bwpsoptions['bu_banlist']; ?></textarea>
 							<p><?php _e( 'Use the guidelines below to enter hosts that will not be allowed access to your site. Note you cannot ban yourself.', $this->hook ); ?></p>
 							<ul><em>
 								<li><?php _e( 'You may ban users by individual IP address or IP address range.', $this->hook ); ?></li>
@@ -1581,7 +1581,7 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 							<label for "bu_banrange"><?php _e( 'Ban User Agents', $this->hook ); ?></label>
 						</th>
 						<td class="settingfield">
-							<textarea id="bu_banrange" rows="10" cols="50" name="bu_banagent"><?php echo isset( $_POST['bu_banrange'] ) ? filter_var( $_POST['bu_banagent'], FILTER_SANITIZE_STRING ) : $bwpsoptions['bu_banagent']; ?></textarea>
+							<textarea id="bu_banrange" rows="10" cols="50" name="bu_banagent"><?php echo isset( $_POST['bu_banrange'] ) && BWPS_GOOD_LIST !== true ? filter_var( $_POST['bu_banagent'], FILTER_SANITIZE_STRING ) : $bwpsoptions['bu_banagent']; ?></textarea>
 							<p><?php _e( 'Use the guidelines below to enter user agents that will not be allowed access to your site.', $this->hook ); ?></p>
 							<ul><em>
 								<li><?php _e( 'Enter only 1 user agent per line.', $this->hook ); ?></li>
@@ -1760,11 +1760,11 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 				if ( $bwpsoptions['backup_last'] == '' ) {
 					$lastbackup = 'Never';
 				} else {
-					$lastbackup = date( 'l F jS, Y \a\t g:i a', strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $bwpsoptions['backup_last'] ) ) ) );
+					$lastbackup = date( 'l F jS, Y \a\t g:i a', $bwpsoptions['backup_last'] );
 				}
 				?>
 				<p><strong><?php _e( 'Last Scheduled Backup:', $this->hook ); ?></strong> <?php echo $lastbackup; ?></p>
-				<p><strong><?php _e( 'Next Scheduled Backup:', $this->hook ); ?></strong> <?php echo date( 'l F jS, Y \a\t g:i a', strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $bwpsoptions['backup_next'] ) ) ) ); ?></p>
+				<p><strong><?php _e( 'Next Scheduled Backup:', $this->hook ); ?></strong> <?php echo date( 'l F jS, Y \a\t g:i a', $bwpsoptions['backup_next'] ); ?></p>
 				<?php if ( file_exists( BWPS_PP . '/backups/lock' ) ) { ?>
 					<p style="color: #ff0000;"><?php _e( 'It looks like a scheduled backup is in progress please reload this page for more accurate times.', $this->hook ); ?></p>
 				<?php } ?>
@@ -1865,6 +1865,15 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 							<td class="settingfield">
 								<input name="hb_admin" id="hb_admin" value="<?php echo $bwpsoptions['hb_admin']; ?>" type="text"><br />
 								<em><span style="color: #666666;"><strong><?php _e( 'Admin URL:', $this->hook ); ?></strong> <?php echo trailingslashit( get_option( 'siteurl' ) ); ?></span><span style="color: #4AA02C"><?php echo $bwpsoptions['hb_admin']; ?></span></em>
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row" class="settinglabel">
+								<label for "hb_getnewkey"><?php _e( 'Generate new secret key', $this->hook ); ?></label>
+							</th>
+							<td class="settingfield">
+								<input id="hb_getnewkey" name="hb_getnewkey" type="checkbox" value="1" />
+								<p><?php _e( 'Check this box to generate a new secret key.', $this->hook ); ?></p>
 							</td>
 						</tr>
 					</table>
@@ -2243,11 +2252,11 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 							<p><?php _e( 'This data is not automatically deleted so that it may be used for analysis. You may delete this data with the form below. To see the actual data you will need to access your database directly.', $this->hook ); ?></p>
 							<p><?php _e( 'Check the box next to the data you would like to clear and then press the "Remove Old Data" button. (note this will not erase entries that may still be used for lockouts).', $this->hook ); ?></p>
 							<ul>
-								<li style="list-style: none;"> <input type="checkbox" name="badlogins" id="badlogins" value="1" /> <label for="badlogins"><?php _e( 'Your database contains', $this->hook ); ?> <strong><?php echo $countlogin; ?> <?php _e( 'bad login entries.', $this->hook ); ?></strong></label></li>
-								<li style="list-style: none;"> <input type="checkbox" name="404s" id="404s" value="1" /> <label for="404s"><?php _e( 'Your database contains', $this->hook ); ?> <strong><?php echo $count404; ?> <?php _e( '404 errors.', $this->hook ); ?></strong><br />
+								<li style="list-style: none;"> <input type="checkbox" name="badlogins" id="badlogins" value="1" /> <label for="badlogins"><?php _e( 'Your database contains', $this->hook ); ?> <strong><?php echo $countlogin; ?></strong> <?php _e( 'bad login entries.', $this->hook ); ?></label></li>
+								<li style="list-style: none;"> <input type="checkbox" name="404s" id="404s" value="1" /> <label for="404s"><?php _e( 'Your database contains', $this->hook ); ?> <strong><?php echo $count404; ?></strong> <?php _e( '404 errors.', $this->hook ); ?><br />
 								<em><?php _e( 'This will clear the 404 log below.', $this->hook ); ?></em></label></li>
-								<li style="list-style: none;"> <input type="checkbox" name="lockouts" id="lockouts" value="1" /> <label for="lockouts"><?php _e( 'Your database contains', $this->hook ); ?> <strong><?php echo $countlockout; ?> <?php _e( 'old lockouts.', $this->hook ); ?></strong></label></li>
-								<li style="list-style: none;"> <input type="checkbox" name="changes" id="changes" value="1" /> <label for="changes"><?php _e( 'Your database contains', $this->hook ); ?> <strong><?php echo $countchange; ?> <?php _e( 'changed file records.', $this->hook ); ?></strong></label></li>
+								<li style="list-style: none;"> <input type="checkbox" name="lockouts" id="lockouts" value="1" /> <label for="lockouts"><?php _e( 'Your database contains', $this->hook ); ?> <strong><?php echo $countlockout; ?></strong> <?php _e( 'old lockouts.', $this->hook ); ?></label></li>
+								<li style="list-style: none;"> <input type="checkbox" name="changes" id="changes" value="1" /> <label for="changes"><?php _e( 'Your database contains', $this->hook ); ?> <strong><?php echo $countchange; ?></strong> <?php _e( 'changed file records.', $this->hook ); ?></label></li>
 							</ul>
 						</td>
 					</tr>
@@ -2268,8 +2277,8 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 			<?php wp_nonce_field( 'BWPS_admin_save','wp_nonce' ); ?>
 			<input type="hidden" name="bwps_page" value="log_2" />
 			<?php //get locked out hosts and users from database
-				$hostLocks = $wpdb->get_results( "SELECT * FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE `active` = 1 AND `exptime` > " . time() . " AND `host` != 0;", ARRAY_A );
-				$userLocks = $wpdb->get_results( "SELECT * FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE `active` = 1 AND `exptime` > " . time() . " AND `user` != 0;", ARRAY_A );
+				$hostLocks = $wpdb->get_results( "SELECT * FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE `active` = 1 AND `exptime` > " . current_time( 'timestamp' ) . " AND `host` != 0;", ARRAY_A );
+				$userLocks = $wpdb->get_results( "SELECT * FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE `active` = 1 AND `exptime` > " . current_time( 'timestamp' ) . " AND `user` != 0;", ARRAY_A );
 			 ?>
 				<table class="form-table">
 					<tr valign="top">
@@ -2280,7 +2289,7 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 							<?php if ( sizeof( $hostLocks ) > 0 ) { ?>
 							<ul>
 								<?php foreach ( $hostLocks as $host) { ?>
-									<li style="list-style: none;"><input type="checkbox" name="lo_<?php echo $host['id']; ?>" id="lo_<?php echo $host['id']; ?>" value="<?php echo $host['id']; ?>" /> <label for="lo_<?php echo $host['id']; ?>"><strong><?php echo $host['host']; ?></strong> - Expires <em><?php echo get_date_from_gmt( date( 'Y-m-d H:i:s', $host['exptime'] ) ); ?></em></label></li>
+									<li style="list-style: none;"><input type="checkbox" name="lo_<?php echo $host['id']; ?>" id="lo_<?php echo $host['id']; ?>" value="<?php echo $host['id']; ?>" /> <label for="lo_<?php echo $host['id']; ?>"><strong><?php echo $host['host']; ?></strong> - Expires <em><?php echo date( 'Y-m-d H:i:s', $host['exptime'] ); ?></em></label></li>
 								<?php } ?>
 							</ul>
 							<?php } else { //no host is locked out ?>
@@ -2297,7 +2306,7 @@ if ( ! class_exists( 'bwps_admin_content' ) ) {
 							<ul>
 								<?php foreach ( $userLocks as $user ) { ?>
 									<?php $userdata = get_userdata( $user['user'] ); ?>
-									<li style="list-style: none;"><input type="checkbox" name="lo_<?php echo $user['id']; ?>" id="lo_<?php echo $user['id']; ?>" value="<?php echo $user['id']; ?>" /> <label for="lo_<?php echo $user['id']; ?>"><strong><?php echo $userdata->user_login; ?></strong> - Expires <em><?php echo get_date_from_gmt( date( 'Y-m-d H:i:s', $user['exptime'] ) ); ?></em></label></li>
+									<li style="list-style: none;"><input type="checkbox" name="lo_<?php echo $user['id']; ?>" id="lo_<?php echo $user['id']; ?>" value="<?php echo $user['id']; ?>" /> <label for="lo_<?php echo $user['id']; ?>"><strong><?php echo $userdata->user_login; ?></strong> - Expires <em><?php echo date( 'Y-m-d H:i:s', $user['exptime'] ); ?></em></label></li>
 								<?php } ?>
 							</ul>
 							<?php } else { //no user is locked out ?>

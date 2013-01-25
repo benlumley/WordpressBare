@@ -4,7 +4,7 @@ Plugin Name: InfiniteWP - Client
 Plugin URI: http://infinitewp.com/
 Description: This is the client plugin of InfiniteWP that communicates with the InfiniteWP Admin panel.
 Author: Revmakx
-Version: 1.1.2
+Version: 1.1.6
 Author URI: http://www.revmakx.com
 */
 /************************************************************
@@ -26,7 +26,7 @@ Author URI: http://www.revmakx.com
  **************************************************************/
 
 if(!defined('IWP_MMB_CLIENT_VERSION'))
-	define('IWP_MMB_CLIENT_VERSION', '1.1.2');
+	define('IWP_MMB_CLIENT_VERSION', '1.1.6');
 
 
 if ( !defined('IWP_MMB_XFRAME_COOKIE')){
@@ -74,6 +74,9 @@ if( !function_exists ( 'iwp_mmb_filter_params' )) {
 	}
 }
 
+
+
+
 if( !function_exists ('iwp_mmb_parse_request')) {
 	function iwp_mmb_parse_request()
 	{
@@ -99,6 +102,7 @@ if( !function_exists ('iwp_mmb_parse_request')) {
 		}
 		
 		if (isset($iwp_action)) {
+			if(!defined('IWP_AUTHORISED_CALL')) define('IWP_AUTHORISED_CALL', 1);
 			$action = $iwp_action;
 			$_wp_using_ext_object_cache = false;
 			@set_time_limit(600);
@@ -214,10 +218,10 @@ if( !function_exists ( 'iwp_mmb_add_site' )) {
 						$iwp_mmb_core->set_admin_panel_public_key($public_key);
 						$iwp_mmb_core->set_client_message_id($id);
 						$iwp_mmb_core->get_stats_instance();
-						if(is_array($notifications) && !empty($notifications)){
+						if(isset($notifications) && is_array($notifications) && !empty($notifications)){
 							$iwp_mmb_core->stats_instance->set_notifications($notifications);
 						}
-						if(is_array($brand) && !empty($brand)){
+						if(isset($brand) && is_array($brand) && !empty($brand)){
 							update_option('iwp_client_brand',$brand);
 						}
 						
@@ -466,6 +470,19 @@ if( !function_exists ( 'iwp_mmb_clean_orphan_backups' )) {
 			iwp_mmb_response($return, true);
 		else
 			iwp_mmb_response($return, false);
+	}
+}
+
+
+
+add_filter( 'iwp_website_add', 'iwp_mmb_readd_backup_task' );
+
+if (!function_exists('iwp_mmb_readd_backup_task')) {
+	function iwp_mmb_readd_backup_task($params = array()) {
+		global $iwp_mmb_core;
+		$backup_instance = $iwp_mmb_core->get_backup_instance();
+		$settings = $backup_instance->readd_tasks($params);
+		return $settings;
 	}
 }
 
@@ -794,6 +811,7 @@ if(!function_exists('checkOpenSSL')){
 }
 
 $iwp_mmb_core = new IWP_MMB_Core();
+$mmb_core = 1;
 
 if(isset($_GET['auto_login']))
 	$iwp_mmb_core->automatic_login();	

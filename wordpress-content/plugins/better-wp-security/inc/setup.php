@@ -94,14 +94,14 @@ if ( ! class_exists( 'bwps_setup' ) ) {
 			$bwpsdata['version'] = $this->pluginversion; //set new version number
 			
 			//remove no support nag if it's been more than six months
-			if ( ! isset( $bwpsdata['activatestamp'] ) || $bwpsdata['activatestamp'] < ( time() - 15552000 ) ) {
+			if ( ! isset( $bwpsdata['activatestamp'] ) || $bwpsdata['activatestamp'] < ( current_time( 'timestamp' ) - 15552000 ) ) {
 			
 				if ( isset( $bwpsdata['no-nag'] ) ) {
 					unset( $bwpsdata['no-nag'] );
 				}
 				
 				//set activate timestamp to today (they'll be notified again in a month)
-				$bwpsdata['activatestamp'] = time();
+				$bwpsdata['activatestamp'] = current_time( 'timestamp' );
 			}
 			
 			//save plugin data
@@ -444,7 +444,26 @@ if ( ! class_exists( 'bwps_setup' ) ) {
 					update_option( 'bwps_awaymode', $amconfirm );
 				
 				}
+
+				if ( str_replace( '.', '', $oldversion ) < 3056 ) {
+				
+					delete_option( 'bwps_awaymode' );
+					delete_option( 'bwps_filecheck' );
+				
+				}
 			
+			}
+
+			if ( ( strstr( strtolower( filter_var( $_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING ) ), 'apache' ) || strstr( strtolower( filter_var( $_SERVER['SERVER_SOFTWARE'], FILTER_SANITIZE_STRING ) ), 'litespeed' ) ) && $bwpsoptions['st_writefiles'] == 1 ) { //if they're using apache write to .htaccess
+				
+				$this->writehtaccess();
+					
+			}
+			
+			if ( $bwpsoptions['st_writefiles'] == 1 ) {
+			
+				$this->writewpconfig(); //write appropriate options to wp-config.php
+				
 			}
 		
 		}
