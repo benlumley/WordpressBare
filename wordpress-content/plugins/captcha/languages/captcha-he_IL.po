@@ -1,0 +1,405 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Captcha v2.30\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-01-02 13:35+0200\n"
+"PO-Revision-Date: 2013-01-02 13:35+0200\n"
+"Last-Translator: zos <zos@bestwebsoft.com>\n"
+"Language-Team: Sagive SEO <info@sagive.co.il>\n"
+"Language: he_IL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-Basepath: ..\n"
+"X-Textdomain-Support: yes\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: .\n"
+
+# @ captcha
+#: captcha.php:31
+msgid "Login form"
+msgstr "טופס התחברות"
+
+# @ captcha
+#: captcha.php:32
+msgid "Register form"
+msgstr "טופס רישום לאתר"
+
+# @ captcha
+#: captcha.php:33
+msgid "Lost password form"
+msgstr "טופס שחזור סיסמה"
+
+# @ captcha
+#: captcha.php:34
+msgid "Comments form"
+msgstr "טופס תגובות"
+
+# @ captcha
+#: captcha.php:35
+msgid "Hide CAPTCHA for registered users"
+msgstr "הסתר את קוד האימות ממשתמשים רשומים"
+
+# @ captcha
+#: captcha.php:40
+msgid "Plus (&#43;)"
+msgstr "חיבור (&#43;)"
+
+# @ captcha
+#: captcha.php:40
+msgid "Plus"
+msgstr "חיבור"
+
+# @ captcha
+#: captcha.php:41
+msgid "Minus (&minus;)"
+msgstr "חיסור (&minus;)"
+
+# @ captcha
+#: captcha.php:41
+msgid "Minus"
+msgstr "חיסור (&minus;)"
+
+# @ captcha
+#: captcha.php:42
+msgid "Multiply (&times;)"
+msgstr "הכפלה (&times;)"
+
+# @ captcha
+#: captcha.php:42
+msgid "Increase"
+msgstr "הגדלה"
+
+# @ captcha
+#: captcha.php:47
+msgid "Numbers"
+msgstr "מספרים"
+
+# @ captcha
+#: captcha.php:48
+msgid "Words"
+msgstr "מילים"
+
+# @ captcha
+#: captcha.php:100
+msgid "Activated plugins"
+msgstr "תוספים פעילים"
+
+# @ captcha
+#: captcha.php:102 captcha.php:110 captcha.php:118
+msgid "Read more"
+msgstr "לקרוא עוד"
+
+# @ captcha
+#: captcha.php:102 captcha.php:221 captcha.php:230
+msgid "Settings"
+msgstr "הגדרות"
+
+# @ captcha
+#: captcha.php:108
+msgid "Installed plugins"
+msgstr "תוספים מותקנים"
+
+# @ captcha
+#: captcha.php:116
+msgid "Recommended plugins"
+msgstr "תוספים מומלצים"
+
+# @ captcha
+#: captcha.php:118
+msgid "Download"
+msgstr "הורדה"
+
+# @ default
+#: captcha.php:118
+#, php-format
+msgid "Install %s"
+msgstr "התקנת %s"
+
+# @ captcha
+#: captcha.php:118
+msgid "Install now from wordpress.org"
+msgstr "התקינו עכשיו מאתר wordpress.org"
+
+# @ captcha
+#: captcha.php:120
+msgid ""
+"If you have any questions, please contact us via plugin@bestwebsoft.com or "
+"fill in our contact form on our site"
+msgstr ""
+"אם יש לכם שאלות אתם מוזמנים לכתוב לנו לכתובת  plugin@bestwebsoft.com או למלא "
+"את טופס יצירת קשר באתר שלנו"
+
+# @ captcha
+#: captcha.php:130 captcha.php:294
+msgid "Captcha Options"
+msgstr "אפשרויות קוד אימות"
+
+# @ captcha
+#: captcha.php:130
+msgid "Captcha"
+msgstr "קוד אימות"
+
+# @ captcha
+#: captcha.php:231
+msgid "FAQ"
+msgstr "שאלות נפוצות"
+
+# @ captcha
+#: captcha.php:232
+msgid "Support"
+msgstr "תמיכה"
+
+# @ captcha
+#: captcha.php:276
+msgid ""
+"Please select one point in the blocks Arithmetic actions and Difficulty for "
+"CAPTCHA"
+msgstr ""
+"אנא בחרו את אחת האפשרויות מתוך רשימת הפעולות המתמטיות וגם את רמת הקושי של "
+"קוד האימות"
+
+# @ captcha
+#: captcha.php:280
+msgid "Options saved."
+msgstr "ההגדרות נשמרו"
+
+# @ captcha
+#: captcha.php:300
+msgid "Enable CAPTCHA on the:"
+msgstr "אפשר קוד אימות ב:"
+
+# @ captcha
+#: captcha.php:309 captcha.php:312 captcha.php:316
+msgid "Contact form"
+msgstr "טופס יצירת קשר"
+
+# @ captcha
+#: captcha.php:309 captcha.php:312 captcha.php:316
+msgid "(power by bestwebsoft.com)"
+msgstr "(מופעל על ידי bestwebsoft.com)"
+
+# @ captcha
+#: captcha.php:312
+msgid "Activate contact form"
+msgstr "הפעלת טופס יצירת קשר"
+
+# @ captcha
+#: captcha.php:316
+msgid "Download contact form"
+msgstr "הורדת טופס יצירת קשר"
+
+# @ captcha
+#: captcha.php:318
+msgid ""
+"If you would like to customize this plugin for a custom form, please contact "
+"us via <a href=\"Mailto:plugin@bestwebsoft.com\">plugin@bestwebsoft.com</a> "
+"or fill in our contact form on our site"
+msgstr ""
+"אם תרצו להתאים תוסף זה לטופס מותאם אישית אתם מוזמנים ליצור עמנו קשר במייל <a "
+"href=\"Mailto:plugin@bestwebsoft.com\">plugin@bestwebsoft.com</a> או בטופס "
+"יצירת הקשר באתר שלנו"
+
+# @ captcha
+#: captcha.php:322
+msgid "Label for CAPTCHA in form"
+msgstr "כותרת קוד האימות בטופס"
+
+# @ captcha
+#: captcha.php:326
+msgid "Arithmetic actions for CAPTCHA"
+msgstr "פעולות מתמטיות עבור קוד האימות"
+
+# @ captcha
+#: captcha.php:335
+msgid "Difficulty for CAPTCHA"
+msgstr "רמת הקושי של קוד האימות"
+
+# @ default
+#: captcha.php:345
+msgid "Save Changes"
+msgstr "שמור שינויים"
+
+# @ captcha
+#: captcha.php:389 captcha.php:395 captcha.php:560 captcha.php:567
+#: captcha.php:577 captcha.php:584
+msgid "ERROR"
+msgstr "שגיאה"
+
+# @ captcha
+#: captcha.php:389 captcha.php:411 captcha.php:527 captcha.php:560
+#: captcha.php:577 captcha.php:600
+msgid "Please complete the CAPTCHA."
+msgstr "אנא השלימו את קוד האימות"
+
+# @ captcha
+#: captcha.php:395 captcha.php:422 captcha.php:567 captcha.php:584
+msgid "That CAPTCHA was incorrect."
+msgstr "קוד האימות היה שגוי."
+
+# @ captcha
+#: captcha.php:533 captcha.php:607
+msgid ""
+"Error: You entered in the wrong CAPTCHA phrase. Press your browser's back "
+"button and try again."
+msgstr ""
+"שגיאה: הזנתם קוד אימות  שגוי. נא ללחוץ על כפתור אחורה בדפדפן ולנסות שוב."
+
+# @ captcha
+#: captcha.php:622 captcha.php:856
+msgid "zero"
+msgstr "אפס"
+
+# @ captcha
+#: captcha.php:623 captcha.php:857 captcha.php:1047
+msgid "one"
+msgstr "אחד"
+
+# @ captcha
+#: captcha.php:624 captcha.php:858
+msgid "two"
+msgstr "שתיים"
+
+# @ captcha
+#: captcha.php:625 captcha.php:859
+msgid "three"
+msgstr "שלוש"
+
+# @ captcha
+#: captcha.php:626 captcha.php:860
+msgid "four"
+msgstr "ארבע"
+
+# @ captcha
+#: captcha.php:627 captcha.php:861
+msgid "five"
+msgstr "חמש"
+
+# @ captcha
+#: captcha.php:628 captcha.php:862 captcha.php:1047
+msgid "six"
+msgstr "שש"
+
+# @ captcha
+#: captcha.php:629 captcha.php:863 captcha.php:1035 captcha.php:1041
+msgid "seven"
+msgstr "שבע"
+
+# @ captcha
+#: captcha.php:630 captcha.php:864 captcha.php:1038
+msgid "eight"
+msgstr "שמונה"
+
+# @ captcha
+#: captcha.php:631 captcha.php:865
+msgid "nine"
+msgstr "תשע"
+
+# @ captcha
+#: captcha.php:634 captcha.php:868
+msgid "eleven"
+msgstr "אחת עשרה"
+
+# @ captcha
+#: captcha.php:635 captcha.php:869
+msgid "twelve"
+msgstr "שתיים עשרה"
+
+# @ captcha
+#: captcha.php:636 captcha.php:870
+msgid "thirteen"
+msgstr "שלוש עשרה"
+
+# @ captcha
+#: captcha.php:637 captcha.php:871
+msgid "fourteen"
+msgstr "ארבע עשרה"
+
+# @ captcha
+#: captcha.php:638 captcha.php:872
+msgid "fifteen"
+msgstr "חמש עשרה"
+
+# @ captcha
+#: captcha.php:639 captcha.php:873
+msgid "sixteen"
+msgstr "שש עשרה"
+
+# @ captcha
+#: captcha.php:640 captcha.php:874
+msgid "seventeen"
+msgstr "שבע עשרה"
+
+# @ captcha
+#: captcha.php:641 captcha.php:875
+msgid "eighteen"
+msgstr "שמונה עשרה"
+
+# @ captcha
+#: captcha.php:642 captcha.php:876
+msgid "nineteen"
+msgstr "תשע עשרה"
+
+# @ captcha
+#: captcha.php:645 captcha.php:879
+msgid "ten"
+msgstr "עשר"
+
+# @ captcha
+#: captcha.php:646 captcha.php:880
+msgid "twenty"
+msgstr "עשרים"
+
+# @ captcha
+#: captcha.php:647 captcha.php:881
+msgid "thirty"
+msgstr "שלושים"
+
+# @ captcha
+#: captcha.php:648 captcha.php:882
+msgid "forty"
+msgstr "ארבעים"
+
+# @ captcha
+#: captcha.php:649 captcha.php:883
+msgid "fifty"
+msgstr "חמישים"
+
+# @ captcha
+#: captcha.php:650 captcha.php:884
+msgid "sixty"
+msgstr "שישים"
+
+# @ captcha
+#: captcha.php:651 captcha.php:885
+msgid "seventy"
+msgstr "שבעים"
+
+# @ captcha
+#: captcha.php:652 captcha.php:886
+msgid "eighty"
+msgstr "שמונים"
+
+# @ captcha
+#: captcha.php:653 captcha.php:887
+msgid "ninety"
+msgstr "תשעים"
+
+# @ captcha
+#: captcha.php:740 captcha.php:974
+msgid "and"
+msgstr "ו"
+
+# @ captcha
+#: captcha.php:759
+msgid "The password of encryption is not set"
+msgstr "סיסמת הקידוד איננה מוגדרת"
+
+# @ captcha
+#: captcha.php:778
+msgid "The password of decoding is not set"
+msgstr "סיסמת פענוח הקידוד איננה מוגדרת"

@@ -1,0 +1,342 @@
+# Byrial Ole Jensen <byrial@vip.cybercity.dk>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: captcha\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-01-02 13:37+0200\n"
+"PO-Revision-Date: 2013-01-02 13:37+0200\n"
+"Last-Translator: zos <zos@bestwebsoft.com>\n"
+"Language-Team: Thomas Hartung <thartung@adipositas-mm.de>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: captcha.php:31
+msgid "Login form"
+msgstr "Giriş Formu"
+
+#: captcha.php:32
+msgid "Register form"
+msgstr "Kayıt Formu"
+
+#: captcha.php:33
+msgid "Lost password form"
+msgstr "Kayıp Parola Formu"
+
+#: captcha.php:34
+msgid "Comments form"
+msgstr "Yorum Formu"
+
+#: captcha.php:35
+msgid "Hide CAPTCHA for registered users"
+msgstr "Kayıtlı kullanıcılar için CAPTCHA'yı gizle"
+
+#: captcha.php:40
+msgid "Plus (&#43;)"
+msgstr "Artı (&#43;)"
+
+#: captcha.php:40
+msgid "Plus"
+msgstr "Artı"
+
+#: captcha.php:41
+msgid "Minus (&minus;)"
+msgstr "Eksi (&minus;)"
+
+#: captcha.php:41
+msgid "Minus"
+msgstr "Eksi"
+
+#: captcha.php:42
+msgid "Multiply (&times;)"
+msgstr "Çarpı (&times;)"
+
+#: captcha.php:42
+msgid "Increase"
+msgstr "Arttır"
+
+#: captcha.php:47
+msgid "Numbers"
+msgstr "Sayılar"
+
+#: captcha.php:48
+msgid "Words"
+msgstr "Kelimeler"
+
+#: captcha.php:100
+msgid "Activated plugins"
+msgstr "Etkinleştirilmiş eklentiler"
+
+#: captcha.php:102 captcha.php:110 captcha.php:118
+msgid "Read more"
+msgstr "Daha fazlası"
+
+#: captcha.php:102 captcha.php:221 captcha.php:230
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: captcha.php:108
+msgid "Installed plugins"
+msgstr "Yüklü eklentiler"
+
+#: captcha.php:116
+msgid "Recommended plugins"
+msgstr "Önerilen eklentiler"
+
+#: captcha.php:118
+msgid "Download"
+msgstr "İndir"
+
+#: captcha.php:118
+#, php-format
+msgid "Install %s"
+msgstr "%s'yi yükle"
+
+#: captcha.php:118
+msgid "Install now from wordpress.org"
+msgstr "Şimdi wordpress.org üzerinden yükle"
+
+#: captcha.php:120
+msgid ""
+"If you have any questions, please contact us via plugin@bestwebsoft.com or "
+"fill in our contact form on our site"
+msgstr ""
+"Herhangi bir sorunuz varsa, plugin@bestwebsoft.com 'a e-posta atarak ya da "
+"sitemizdeki iletişim formu aracılığıyla bizimle iletişime geçebilirsiniz "
+"(ingilizce)"
+
+#: captcha.php:130 captcha.php:294
+msgid "Captcha Options"
+msgstr "Captcha Ayarları"
+
+#: captcha.php:130
+msgid "Captcha"
+msgstr "Captcha"
+
+#: captcha.php:231
+msgid "FAQ"
+msgstr "SSS"
+
+#: captcha.php:232
+msgid "Support"
+msgstr "Destek"
+
+#: captcha.php:276
+msgid ""
+"Please select one point in the blocks Arithmetic actions and Difficulty for "
+"CAPTCHA"
+msgstr ""
+"Lütfen, Aritmetik Hareketler ve CAPTCHA İçin Zorluk bloklarından bir nokta "
+"seçin."
+
+#: captcha.php:280
+msgid "Options saved."
+msgstr "Ayarlar kaydedildi."
+
+#: captcha.php:300
+msgid "Enable CAPTCHA on the:"
+msgstr "CAPTCHA'yı şunlarda aktifleştir:"
+
+#: captcha.php:309 captcha.php:312 captcha.php:316
+msgid "Contact form"
+msgstr "İletişim Formu"
+
+#: captcha.php:309 captcha.php:312 captcha.php:316
+msgid "(power by bestwebsoft.com)"
+msgstr "(bestwebsoft.com tarafından)"
+
+#: captcha.php:312
+msgid "Activate contact form"
+msgstr "İletişim formunu etkinleştir"
+
+#: captcha.php:316
+msgid "Download contact form"
+msgstr "İletişim formunu indir"
+
+#: captcha.php:318
+msgid ""
+"If you would like to customize this plugin for a custom form, please contact "
+"us via <a href=\"Mailto:plugin@bestwebsoft.com\">plugin@bestwebsoft.com</a> "
+"or fill in our contact form on our site"
+msgstr ""
+"Eğer eklentiyi, özelleştirilmiş bir form için kişiselleştirmek isterseniz, "
+"<a href=\"Mailto:plugin@bestwebsoft.com\">plugin@bestwebsoft.com</a> "
+"aracılığıyla ya da sitemizdeki iletişim formu aracılığıyla bizimle iletişime "
+"geçebilirsiniz."
+
+#: captcha.php:322
+msgid "Label for CAPTCHA in form"
+msgstr "Formdaki CAPTCHA Etiketi"
+
+#: captcha.php:326
+msgid "Arithmetic actions for CAPTCHA"
+msgstr "CAPTCHA için Aritmetik Hareketler"
+
+#: captcha.php:335
+msgid "Difficulty for CAPTCHA"
+msgstr "CAPTCHA Zorluğu"
+
+#: captcha.php:345
+msgid "Save Changes"
+msgstr "Değişiklikleri Kaydet"
+
+#: captcha.php:389 captcha.php:395 captcha.php:560 captcha.php:567
+#: captcha.php:577 captcha.php:584
+msgid "ERROR"
+msgstr "HATA"
+
+#: captcha.php:389 captcha.php:411 captcha.php:527 captcha.php:560
+#: captcha.php:577 captcha.php:600
+msgid "Please complete the CAPTCHA."
+msgstr "Lütfen CAPTCHA doğrulama sistemini tamamlayın."
+
+#: captcha.php:395 captcha.php:422 captcha.php:567 captcha.php:584
+msgid "That CAPTCHA was incorrect."
+msgstr "Girdiğiniz CAPTCHA kodu yanlış."
+
+#: captcha.php:533 captcha.php:607
+msgid ""
+"Error: You entered in the wrong CAPTCHA phrase. Press your browser's back "
+"button and try again."
+msgstr ""
+"HATA: Yanlış CAPTCHA cevabı girdiniz. Tarayıcınızın GERİ butonuna basın ve "
+"tekrar deneyin."
+
+#: captcha.php:622 captcha.php:856
+msgid "zero"
+msgstr "sıfır"
+
+#: captcha.php:623 captcha.php:857 captcha.php:1047
+msgid "one"
+msgstr "bir"
+
+#: captcha.php:624 captcha.php:858
+msgid "two"
+msgstr "iki"
+
+#: captcha.php:625 captcha.php:859
+msgid "three"
+msgstr "üç"
+
+#: captcha.php:626 captcha.php:860
+msgid "four"
+msgstr "dört"
+
+#: captcha.php:627 captcha.php:861
+msgid "five"
+msgstr "beş"
+
+#: captcha.php:628 captcha.php:862 captcha.php:1047
+msgid "six"
+msgstr "altı"
+
+#: captcha.php:629 captcha.php:863 captcha.php:1035 captcha.php:1041
+msgid "seven"
+msgstr "yedi"
+
+#: captcha.php:630 captcha.php:864 captcha.php:1038
+msgid "eight"
+msgstr "sekiz"
+
+#: captcha.php:631 captcha.php:865
+msgid "nine"
+msgstr "dokuz"
+
+#: captcha.php:634 captcha.php:868
+msgid "eleven"
+msgstr "onbir"
+
+#: captcha.php:635 captcha.php:869
+msgid "twelve"
+msgstr "oniki"
+
+#: captcha.php:636 captcha.php:870
+msgid "thirteen"
+msgstr "onüç"
+
+#: captcha.php:637 captcha.php:871
+msgid "fourteen"
+msgstr "ondört"
+
+#: captcha.php:638 captcha.php:872
+msgid "fifteen"
+msgstr "onbeş"
+
+#: captcha.php:639 captcha.php:873
+msgid "sixteen"
+msgstr "onaltı"
+
+#: captcha.php:640 captcha.php:874
+msgid "seventeen"
+msgstr "onyedi"
+
+#: captcha.php:641 captcha.php:875
+msgid "eighteen"
+msgstr "onsekiz"
+
+#: captcha.php:642 captcha.php:876
+msgid "nineteen"
+msgstr "ondokuz"
+
+#: captcha.php:645 captcha.php:879
+msgid "ten"
+msgstr "on"
+
+#: captcha.php:646 captcha.php:880
+msgid "twenty"
+msgstr "yirmi"
+
+#: captcha.php:647 captcha.php:881
+msgid "thirty"
+msgstr "otuz"
+
+#: captcha.php:648 captcha.php:882
+msgid "forty"
+msgstr "kırk"
+
+#: captcha.php:649 captcha.php:883
+msgid "fifty"
+msgstr "elli"
+
+#: captcha.php:650 captcha.php:884
+msgid "sixty"
+msgstr "altmış"
+
+#: captcha.php:651 captcha.php:885
+msgid "seventy"
+msgstr "yetmiş"
+
+#: captcha.php:652 captcha.php:886
+msgid "eighty"
+msgstr "seksen"
+
+#: captcha.php:653 captcha.php:887
+msgid "ninety"
+msgstr "doksan"
+
+#: captcha.php:740 captcha.php:974
+msgid "and"
+msgstr "ve"
+
+#: captcha.php:759
+msgid "The password of encryption is not set"
+msgstr "Şifreleme (encode) için parola ayarlanmadı"
+
+#: captcha.php:778
+msgid "The password of decoding is not set"
+msgstr "Şifre çözme (decode) için parola ayarlanmadı"
+
+#~ msgid "null"
+#~ msgstr "sıfır"
+
+#~ msgid "BWS Plugins"
+#~ msgstr "BWS Plugins"
+
+#~ msgid "Install Now"
+#~ msgstr "Installér nu"
