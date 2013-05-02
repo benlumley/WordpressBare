@@ -22,18 +22,18 @@ $zip_errors   = array(
     'No error',
     'No error',
     'Unexpected end of zip file',
-    'A generic error in the zipfile format was detected.',
+    'A generic error in the zipfile format was detected',
     'zip was unable to allocate itself memory',
     'A severe error in the zipfile format was detected',
     'Entry too large to be split with zipsplit',
     'Invalid comment format',
     'zip -T failed or out of memory',
     'The user aborted zip prematurely',
-    'zip encountered an error while using a temp file',
+    'zip encountered an error while using a temp file. Please check if this domain\'s account has enough disk space.',
     'Read or seek error',
     'zip has nothing to do',
     'Missing or empty zip file',
-    'Error writing to a file',
+    'Error writing to a file. Please check if this domain\'s account has enough disk space.',
     'zip was unable to create a file to write to',
     'bad command line parameters',
     'no error',
@@ -379,21 +379,23 @@ function delete_task_now($task_name){
                 chdir(IWP_BACKUP_DIR);
                 $zip     = $this->get_zip();
                 $command = "$zip -q -r $comp_level $backup_file 'iwp_db'";
+				iwp_mmb_print_flush('DB ZIP CMD: Start');
                 ob_start();
                 $result = $this->iwp_mmb_exec($command);
                 ob_get_clean();
-				echo "\n".'DB ZIP CMD';
+				iwp_mmb_print_flush('DB ZIP CMD: End');
 				/*zip_backup_db */
 				if(!$result){
 					$zip_archive_db_result = false;
 					if (class_exists("ZipArchive")) {
 						$this->_log("DB zip, fallback to ZipArchive");
+						iwp_mmb_print_flush('DB ZIP Archive: Start');
 						$zip_archive_db_result = $this->zip_archive_backup_db($task_name, $db_result, $backup_file);
-						echo "\n".'DB ZIP Archive';
+						iwp_mmb_print_flush('DB ZIP Archive: End');
 					}
 					
 					if (!$zip_archive_db_result) {
-						echo "\n".'DB ZIP PCL';
+						iwp_mmb_print_flush('DB ZIP PCL: Start');
 						 // fallback to pclzip
 						define('PCLZIP_TEMPORARY_DIR', IWP_BACKUP_DIR . '/');
 						//require_once ABSPATH . '/wp-admin/includes/class-pclzip.php';
@@ -412,6 +414,7 @@ function delete_task_now($task_name){
 						else{
 							 $result = $archive->add(IWP_DB_DIR, PCLZIP_OPT_REMOVE_PATH, IWP_BACKUP_DIR);
 						}
+						iwp_mmb_print_flush('DB ZIP PCL: End');
 						@unlink($db_result);
 						@unlink(IWP_BACKUP_DIR.'/iwp_db/index.php');
 						@rmdir(IWP_DB_DIR);
@@ -472,7 +475,7 @@ function delete_task_now($task_name){
             }
             
 
-if (isset($backup_settings[$task_name]['task_args']['account_info']['iwp_ftp'])) {
+		if (isset($backup_settings[$task_name]['task_args']['account_info']['iwp_ftp'])) {
                 $paths['ftp'] = basename($backup_url);
             }
             
@@ -510,13 +513,14 @@ if (isset($backup_settings[$task_name]['task_args']['account_info']['iwp_ftp']))
           /*
 //IWP Remove starts here  //IWP Remove ends here
 */ 
-if ($task_name != 'Backup Now') {
+		if ($task_name != 'Backup Now') {
             
-if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
+			if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
                 $this->update_status($task_name, $this->statuses['ftp']);
                 $account_info['iwp_ftp']['backup_file'] = $backup_file;
+				iwp_mmb_print_flush('FTP upload: Start');
                 $ftp_result                             = $this->ftp_backup($account_info['iwp_ftp']);
-                
+                iwp_mmb_print_flush('FTP upload: End');
                 if ($ftp_result !== true && $del_host_file) {
                     @unlink($backup_file);
                 }
@@ -531,7 +535,9 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
             if (isset($account_info['iwp_amazon_s3']) && !empty($account_info['iwp_amazon_s3'])) {
                 $this->update_status($task_name, $this->statuses['s3']);
                 $account_info['iwp_amazon_s3']['backup_file'] = $backup_file;
+				iwp_mmb_print_flush('Amazon S3 upload: Start');
                 $amazons3_result                              = $this->amazons3_backup($account_info['iwp_amazon_s3']);
+				iwp_mmb_print_flush('Amazon S3 upload: End');
                 if ($amazons3_result !== true && $del_host_file) {
                     @unlink($backup_file);
                 }
@@ -545,7 +551,9 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
             if (isset($account_info['iwp_dropbox']) && !empty($account_info['iwp_dropbox'])) {
                 $this->update_status($task_name, $this->statuses['dropbox']);
                 $account_info['iwp_dropbox']['backup_file'] = $backup_file;
+				iwp_mmb_print_flush('Dropbox upload: Start');
                 $dropbox_result                             = $this->dropbox_backup($account_info['iwp_dropbox']);
+				iwp_mmb_print_flush('Dropbox upload: End');
                 if ($dropbox_result !== true && $del_host_file) {
                     @unlink($backup_file);
                 }
@@ -596,29 +604,31 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
         $disable_comp = $this->tasks[$task_name]['task_args']['disable_comp'];
         $comp_level   = $disable_comp ? '-0' : '-1';
         $zip = $this->get_zip();
+		iwp_mmb_print_flush('DB ZIP CMD: Start');
         //Add database file
         chdir(IWP_BACKUP_DIR);
         $command = "$zip -q -r $comp_level $backup_file 'iwp_db'";
         ob_start();
         $result = $this->iwp_mmb_exec($command);
         ob_get_clean();
-		echo "\n".'DB ZIP CMD';
+		iwp_mmb_print_flush('DB ZIP CMD: End');
         /*zip_backup_db*/
 		
         if(!$result){
         	$zip_archive_db_result = false;
         	if (class_exists("ZipArchive")) {
+				iwp_mmb_print_flush('DB ZIP Archive: Start');
         		$this->_log("DB zip, fallback to ZipArchive");
         		$zip_archive_db_result = $this->zip_archive_backup_db($task_name, $db_result, $backup_file);
-				echo "\n".'DB ZIP Archive';
+				iwp_mmb_print_flush('DB ZIP Archive: End');
 			}
 		
 			if (!$zip_archive_db_result) {
-				echo "\n".'DB ZIP PCL';
+				iwp_mmb_print_flush('DB ZIP PCL: Start');
 				define('PCLZIP_TEMPORARY_DIR', IWP_BACKUP_DIR . '/');
 				require_once $GLOBALS['iwp_mmb_plugin_dir'].'/pclzip.class.php';
 				$archive = new IWPPclZip($backup_file);
-							
+				
 				if($fail_safe_files && $disable_comp){
 					 $result_db = $archive->add(IWP_DB_DIR, PCLZIP_OPT_REMOVE_PATH, IWP_BACKUP_DIR, PCLZIP_OPT_NO_COMPRESSION, PCLZIP_OPT_TEMP_FILE_THRESHOLD, 1);
 				}
@@ -631,6 +641,7 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
 				else{
 					 $result_db = $archive->add(IWP_DB_DIR, PCLZIP_OPT_REMOVE_PATH, IWP_BACKUP_DIR);
 				}
+				iwp_mmb_print_flush('DB ZIP PCL: End');
 				
 				@unlink($db_result);
 				@unlink(IWP_BACKUP_DIR.'/iwp_db/index.php');
@@ -675,23 +686,21 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
                         $exclude_data .= " $data/*.*";
                     else
                         $exclude_data .= " '$data/*'";
-                        
-                        
-                } else {
+                }else {
                     if ($sys == 'WIN'){
                     	if(file_exists(ABSPATH . $data)){
-                        $exclude_data .= " $data";
+							$exclude_data .= " $data";
                         	$exclude_file_data .= " $data";
                         }
-                      } else {
-                    			if(file_exists(ABSPATH . $data)){
-                        $exclude_data .= " '$data'";
-                        		$exclude_file_data .= " '$data'";
-                }
-            }
-        }
-            }
-        }
+					}else {
+						  if(file_exists(ABSPATH . $data)){
+							  $exclude_data .= " '$data'";
+                        	  $exclude_file_data .= " '$data'";
+						  }
+					  }
+				  }
+              }
+         }
         
         if($exclude_file_data){
         	$exclude_file_data = "-x".$exclude_file_data;
@@ -704,7 +713,7 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
                 $exclude_data .= " $data/*.*";
             else
                 $exclude_data .= " '$data/*'";
-        }*///commented for pclzip modifications
+        }*/ //commented for pclzip modifications
         
         //Include paths by default
         $add = array(
@@ -737,37 +746,64 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
         
         $this->update_status($task_name, $this->statuses['files_zip']);
         chdir(ABSPATH);
-        ob_start();
-        $command  = "$zip -q -j $comp_level $backup_file .* * $exclude_file_data";
+		
+		$do_cmd_zip_alternative = false;
+		@copy($backup_file, $backup_file.'_2');
+		
+		iwp_mmb_print_flush('Files ZIP CMD: Start');
+		$command  = "$zip -q -j $comp_level $backup_file .* * $exclude_file_data";
+        ob_start();        
         $result_f = $this->iwp_mmb_exec($command, false, true);
-        if (!$result_f || $result_f == 18) { // disregard permissions error, file can't be accessed
+		ob_get_clean();
+		iwp_mmb_print_flush('Files ZIP CMD: 1/2 over');
+        if (!$result_f || $result_f == 18) { // disregard permissions error, file can't be accessed			
             $command  = "$zip -q -r $comp_level $backup_file $include_data $exclude_data";
-            $result_d = $this->iwp_mmb_exec($command, false, true);            
+			ob_start();	
+            $result_d = $this->iwp_mmb_exec($command, false, true);  
+			ob_get_clean();        
             if ($result_d && $result_d != 18) {
                 @unlink($backup_file);
-                if ($result_d > 0 && $result_d < 18)
-                    return array(
-                        'error' => 'Failed to archive files (' . $zip_errors[$result_d] . ') .'
-                    );
-                else
-                    return array(
-                        'error' => 'Failed to archive files.'
-                    );
+				$do_cmd_zip_alternative = true;
+				
+				
+                if($result_d > 0 && $result_d < 18){
+                   //return array(
+                   //     'error' => 'Failed to archive files (' . $zip_errors[$result_d] . ') .'
+                   // );
+					iwp_mmb_print_flush('Files ZIP CMD: Failed to archive files (' . $zip_errors[$result_d] . ') .');
+				}
+                else{
+                    //return array(
+                    //    'error' => 'Failed to archive files.'
+                    //);
+					iwp_mmb_print_flush('Files ZIP CMD: Failed to archive files.');
+				}
             }
         }
-        ob_get_clean();
-		echo "\n".'Files ZIP CMD';
-		if ($result_f && $result_f != 18) {
+		
+		if(!$do_cmd_zip_alternative){//if FILE ZIP CMD successful
+			@unlink($backup_file.'_2');			
+		}
+        
+		iwp_mmb_print_flush('Files ZIP CMD: End');
+		if (($result_f && $result_f != 18) || ($do_cmd_zip_alternative)) {
+			
+			if($do_cmd_zip_alternative){
+				@copy($backup_file.'_2', $backup_file);
+				@unlink($backup_file.'_2');
+			}
+			
         	$zip_archive_result = false;
         	if (class_exists("ZipArchive")) {
+				iwp_mmb_print_flush('Files ZIP Archive: Start');
         		$this->_log("Files zip fallback to ZipArchive");
         		$zip_archive_result = $this->zip_archive_backup($task_name, $backup_file, $exclude, $include);
-				echo "\n".'Files ZIP Archive';
+				iwp_mmb_print_flush('Files ZIP Archive: End');
        		}
 		
 		
 			if (!$zip_archive_result) { //Try pclZip
-				echo "\n".'Files ZIP PCL';
+				iwp_mmb_print_flush('Files ZIP PCL: Start');
 				if (!isset($archive)) {
 					define('PCLZIP_TEMPORARY_DIR', IWP_BACKUP_DIR . '/');
 					//require_once ABSPATH . '/wp-admin/includes/class-pclzip.php';
@@ -826,6 +862,8 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
 				else{
 					$result = $archive->add($include_data, PCLZIP_OPT_REMOVE_PATH, ABSPATH, PCLZIP_OPT_IWP_EXCLUDE, $exclude_data);
 				}
+				
+				iwp_mmb_print_flush('Files ZIP PCL: End');
 				
 				if (!$result) {
 					@unlink($backup_file);
@@ -893,6 +931,7 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
 		}
 		if ($result === true) {
 			foreach ($filelist as $file) {
+				iwp_mmb_auto_print('zip_archive_backup');
 				$result = $result && $zip->addFile($file, sprintf("%s", str_replace(ABSPATH, '', $file))); // Tries to add a new file to $backup_file
 			}
 			$result = $result && $zip->close(); // Tries to close $backup_file
@@ -946,7 +985,12 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
                 return array(
                     'error' => 'Error creating database backup folder (' . $db_folder . '). Make sure you have corrrect write permissions.'
                 );
-			 @file_put_contents(IWP_BACKUP_DIR.'/iwp_db/index.php', '');
+			$db_index_file = '<?php
+			global $old_url, $old_file_path;
+			$old_url = \''.get_option('siteurl').'\';
+			$old_file_path = \''.ABSPATH.'\';
+			';
+			@file_put_contents(IWP_BACKUP_DIR.'/iwp_db/index.php', $db_index_file);
         }
         
         $file   = $db_folder . DB_NAME . '.sql';
@@ -960,10 +1004,11 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
         $paths   = $this->check_mysql_paths();
         $brace   = (substr(PHP_OS, 0, 3) == 'WIN') ? '"' : '';
         $command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables "' . DB_NAME . '" > ' . $brace . $file . $brace;
+		iwp_mmb_print_flush('DB DUMP CMD: Start');
         ob_start();
         $result = $this->iwp_mmb_exec($command);
         ob_get_clean();
-		echo "\n".'DB DUMP CMD';
+		iwp_mmb_print_flush('DB DUMP CMD: End');
         
         if (!$result) { // Fallback to php
             $result = $this->backup_db_php($file);
@@ -983,7 +1028,7 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
         global $wpdb;
 		
 		if(empty($GLOBALS['fail_safe_db'])){
-			echo "\n".'DB DUMP PHP Normal';
+			iwp_mmb_print_flush('DB DUMP PHP Normal: Start');
 			$fp = fopen( $file, 'w' );
 			if ( !mysql_ping( $wpdb->dbh ) ) {
 				mysql_connect( DB_HOST, DB_USER, DB_PASSWORD );
@@ -1006,6 +1051,7 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
 	
 			//$tables = $wpdb->get_results('SHOW TABLES', ARRAY_N);
 			foreach ($tables as $table) {
+				iwp_mmb_auto_print('backup_db_php_normal');
 				
 				$insert_sql .= "DROP TABLE IF EXISTS $table;";
 				//create table
@@ -1064,11 +1110,14 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
 			}
 			fclose( $fp );
 			unset ($fp);
+			iwp_mmb_print_flush('DB DUMP PHP Normal: End');
 		}
 		else{
-			echo "\n".'DB DUMP PHP Fail-safe';
+			iwp_mmb_print_flush('DB DUMP PHP Fail-safe: Start');
+			file_put_contents($file, '');//safe  to reset any old data
 			$tables = $wpdb->get_results('SHOW TABLES', ARRAY_N);
 			foreach ($tables as $table) {
+			
 				//drop existing table
 				$dump_data    = "DROP TABLE IF EXISTS $table[0];";
             file_put_contents($file, $dump_data, FILE_APPEND);
@@ -1084,6 +1133,7 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
 					$count = 1;                
 					
 				for ($i = 0; $i < $count; $i++) {
+					iwp_mmb_auto_print('backup_db_php_fail_safe');
 					$low_limit = $i * 100;
 					$qry       = "SELECT * FROM $table[0] LIMIT $low_limit, 100";
 					$rows      = $wpdb->get_results($qry, ARRAY_A);
@@ -1111,6 +1161,7 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
 				unset($rows);
 				unset($dump_data);
 			}
+			iwp_mmb_print_flush('DB DUMP PHP Fail-safe: End');
         }
         
         if (filesize($file) == 0 || !is_file($file)) {
@@ -1126,6 +1177,7 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
     
     function restore($args)
     {
+		
         global $wpdb;
         if (empty($args)) {
             return false;
@@ -1153,17 +1205,14 @@ if (isset($account_info['iwp_ftp']) && !empty($account_info['iwp_ftp'])) {
             if (isset($task['task_results'][$result_id]['server'])) {
                 $backup_file = $task['task_results'][$result_id]['server']['file_path'];
                 $unlink_file = false; //Don't delete file if stored on server
-            } 
-            
-/*
-//IWP Remove starts here//IWP Remove ends here
-*/
-
-elseif (isset($task['task_results'][$result_id]['ftp'])) {
+				
+            } elseif (isset($task['task_results'][$result_id]['ftp'])) {
                 $ftp_file            = $task['task_results'][$result_id]['ftp'];
                 $args                = $task['task_args']['account_info']['iwp_ftp'];
                 $args['backup_file'] = $ftp_file;
+				iwp_mmb_print_flush('FTP download: Start');
                 $backup_file         = $this->get_ftp_backup($args);
+				iwp_mmb_print_flush('FTP download: End');
                 if ($backup_file == false) {
                     return array(
                         'error' => 'Failed to download file from FTP.'
@@ -1173,7 +1222,9 @@ elseif (isset($task['task_results'][$result_id]['ftp'])) {
                 $amazons3_file       = $task['task_results'][$result_id]['amazons3'];
                 $args                = $task['task_args']['account_info']['iwp_amazon_s3'];
                 $args['backup_file'] = $amazons3_file;
+				iwp_mmb_print_flush('Amazon S3 download: Start');
                 $backup_file         = $this->get_amazons3_backup($args);
+				iwp_mmb_print_flush('Amazon S3 download: End');
                 if ($backup_file == false) {
                     return array(
                         'error' => 'Failed to download file from Amazon S3.'
@@ -1183,7 +1234,9 @@ elseif (isset($task['task_results'][$result_id]['ftp'])) {
             	$dropbox_file       = $task['task_results'][$result_id]['dropbox'];
                 $args                = $task['task_args']['account_info']['iwp_dropbox'];
                 $args['backup_file'] = $dropbox_file;
+				iwp_mmb_print_flush('Dropbox download: Start');
                 $backup_file         = $this->get_dropbox_backup($args);
+				iwp_mmb_print_flush('Dropbox download: End');
                 
                 if ($backup_file == false) {
                     return array(
@@ -1230,26 +1283,32 @@ elseif (isset($task['task_results'][$result_id]['ftp'])) {
                 
             } else {
             	$restore_options                       = array();
-              $restore_options['iwp_client_notifications'] = get_option('iwp_client_notifications');
-              $restore_options['iwp_client_pageview_alerts'] = get_option('iwp_client_pageview_alerts');
-              $restore_options['iwp_client_user_hit_count'] = get_option('iwp_client_user_hit_count');
+              $restore_options['iwp_client_notifications'] = serialize(get_option('iwp_client_notifications'));
+              $restore_options['iwp_client_pageview_alerts'] = serialize(get_option('iwp_client_pageview_alerts'));
+              $restore_options['iwp_client_user_hit_count'] = serialize(get_option('iwp_client_user_hit_count'));
+			  $restore_options['iwp_client_backup_tasks'] = serialize(get_option('iwp_client_backup_tasks'));
             }
             
             
             chdir(ABSPATH);
             $unzip   = $this->get_unzip();
             $command = "$unzip -o $backup_file";
+			iwp_mmb_print_flush('ZIP Extract CMD: Start');
             ob_start();
             $result = $this->iwp_mmb_exec($command);
             ob_get_clean();
+			iwp_mmb_print_flush('ZIP Extract CMD: End');
             
             if (!$result) { //fallback to pclzip
                 define('PCLZIP_TEMPORARY_DIR', IWP_BACKUP_DIR . '/');
                 //require_once ABSPATH . '/wp-admin/includes/class-pclzip.php';
 				require_once $GLOBALS['iwp_mmb_plugin_dir'].'/pclzip.class.php';
+				iwp_mmb_print_flush('ZIP Extract PCL: Start');
                 $archive = new IWPPclZip($backup_file);
                 $result  = $archive->extract(PCLZIP_OPT_PATH, ABSPATH, PCLZIP_OPT_REPLACE_NEWER);
+				iwp_mmb_print_flush('ZIP Extract PCL: End');
             }
+			$this->wpdb_reconnect();
             
             if ($unlink_file) {
                 @unlink($backup_file);
@@ -1371,15 +1430,25 @@ elseif (isset($task['task_results'][$result_id]['ftp'])) {
             //Check for .htaccess permalinks update
             $this->replace_htaccess($home);
         } else {
-        			
-        			//restore client options
-              if (is_array($restore_options) && !empty($restore_options)) {
-                foreach ($restore_options as $key => $option) {
-                	update_option($key,$option);
-                }
-              }
-
-        }
+			//restore client options
+             if (is_array($restore_options) && !empty($restore_options)) {
+				 foreach ($restore_options as $key => $option) {
+					 if (!empty($key)) {
+						$query = "SELECT option_value FROM " . $wpdb->base_prefix . "options WHERE option_name = %s";
+						$res   = $wpdb->get_var($wpdb->prepare($query, $key));
+						if ($res == false) {
+							$query = "INSERT INTO " . $wpdb->base_prefix . "options  (option_value,option_name) VALUES(%s,%s)";
+							$wpdb->query($wpdb->prepare($query, $option, $key));
+						} else {
+							$query = "UPDATE " . $wpdb->base_prefix . "options  SET option_value = %s WHERE option_name = %s";
+							$wpdb->query($wpdb->prepare($query, $option, $key));
+						}
+					}
+					
+					/*$test = update_option($key,$option);*/
+				 }
+			 }
+		}
                 
         return !empty($new_user) ? $new_user : true ;
     }
@@ -1399,10 +1468,11 @@ elseif (isset($task['task_results'][$result_id]['ftp'])) {
         
         $brace     = (substr(PHP_OS, 0, 3) == 'WIN') ? '"' : '';
         $command   = $brace . $paths['mysql'] . $brace . ' --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --default-character-set="utf8" ' . DB_NAME . ' < ' . $brace . $file_name . $brace;
-        
+        iwp_mmb_print_flush('DB Restore CMD: Start'); 
         ob_start();
         $result = $this->iwp_mmb_exec($command);
         ob_get_clean();
+		iwp_mmb_print_flush('DB Restore CMD: End'); 
         if (!$result) {
             //try php
             $this->restore_db_php($file_name);
@@ -1416,13 +1486,19 @@ elseif (isset($task['task_results'][$result_id]['ftp'])) {
     
     function restore_db_php($file_name)
     {
-        global $wpdb;
+        
+		$this->wpdb_reconnect();
+		global $wpdb;
+		
+		$wpdb->query("SET NAMES 'utf8'");
+		
         $current_query = '';
         // Read in entire file
         $lines         = file($file_name);
         // Loop through each line
 		if(!empty($lines)){
 			foreach ($lines as $line) {
+				iwp_mmb_auto_print('restore_db_php');
 				// Skip it if it's a comment
 				if (substr($line, 0, 2) == '--' || $line == '')
 					continue;
@@ -1680,7 +1756,7 @@ function ftp_backup($args)
                 }
             } else {
                 return array(
-                    'error' => 'Your server doesn\'t support SFTP',
+                    'error' => 'Your server doesn\'t support FTP SSL',
                     'partial' => 1
                 );
             }
@@ -1875,9 +1951,10 @@ function ftp_backup($args)
   		$temp = ABSPATH . 'iwp_temp_backup.zip';
   		
   		try {
-  			$file = $dropbox->download($dropbox_destination.'/'.$backup_file);
-  			$handle = @fopen($temp, 'w');
-			$result = fwrite($handle,$file);
+			
+  			$file = $dropbox->download($dropbox_destination.'/'.$backup_file); 
+			$handle = @fopen($temp, 'w'); 			
+			$result = fwrite($handle, $file);
 			fclose($handle);
 			
 			if($result)
@@ -2423,7 +2500,7 @@ function get_next_schedules()
 					}
 					
 				}
-				if (isset($task['account_info']) && is_array($task['account_info'])) { //only if sends from master first time(secure data)
+				if (isset($task['account_info']) && is_array($task['account_info'])) { //only if sends from panel first time(secure data)
 					$task['args']['account_info'] = $task['account_info'];
 				}
 				

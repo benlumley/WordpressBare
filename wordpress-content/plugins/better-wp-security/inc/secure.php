@@ -10,94 +10,123 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 		 **/		 
 		function __construct() {
 			
-			global $bwpsoptions, $is_404;
+			global $bwpsoptions, $is_404, $isIWP;
+
+			//set a global variable if this is a call from InfiniteWP
+			$HTTP_RAW_POST_DATA = file_get_contents( 'php://input' );
+			$data = base64_decode( $HTTP_RAW_POST_DATA );
+
+			if ( $data ) {
+				$unserialized_data = unserialize( $data );
+				if ( isset( $unserialized_data['iwp_action'] ) ) {
+					$iwp_action = $unserialized_data['iwp_action'];
+				}
+			}
+			
+			if ( isset( $iwp_action ) ) {
+				$isIWP = true;
+			} else {
+				$isIWP = false;
+			}
 			
 			//Don't redirect any SSL if SSL is turned off.
 			if ( $bwpsoptions['ssl_frontend']  >= 1 ) {
 				add_action( 'template_redirect', array( &$this, 'sslredirect' ) );
 			}
-			
-			//execute default checks
-			add_action( 'init', array( &$this, 'siteinit' ) );
 
-			//execute 404 check
-			if ( $bwpsoptions['id_enabled'] == 1 ) {
-				add_action( 'wp_head', array( &$this,'check404' ) );
-			}
+			//don't execute anything but SSL for InfiniteWP
+			if ( $isIWP === false ) {
 			
-			//remove wp-generator meta tag
-			if ( $bwpsoptions['st_generator'] == 1 ) { 
-				remove_action( 'wp_head', 'wp_generator' );
-			}
-			
-			//remove login error messages if turned on
-			if ( $bwpsoptions['st_loginerror'] == 1 ) {
-				add_filter( 'login_errors', create_function( '$a', 'return null;' ) );
-			}
-			
-			//remove wlmanifest link if turned on
-			if ( $bwpsoptions['st_manifest'] == 1 ) {
-				remove_action( 'wp_head', 'wlwmanifest_link' );
-			}
-			
-			//remove rsd link from header if turned on
-			if ( $bwpsoptions['st_edituri'] == 1 ) {
-				remove_action( 'wp_head', 'rsd_link' );
-			}
-			
-			//ban extra-long urls if turned on
-			if ( $bwpsoptions['st_longurl'] == 1 && ! is_admin() ) {
-			
-				if ( strlen( $_SERVER['REQUEST_URI'] ) > 255 ||
+				//execute default checks
+				add_action( 'init', array( &$this, 'siteinit' ) );
+
+				//execute 404 check
+				if ( $bwpsoptions['id_enabled'] == 1 ) {
+					add_action( 'wp_head', array( &$this,'check404' ) );
+				}
 				
-					strpos( $_SERVER['REQUEST_URI'], "eval(" ) ||
-					strpos( $_SERVER['REQUEST_URI'], "CONCAT" ) ||
-					strpos( $_SERVER['REQUEST_URI'], "UNION+SELECT" ) ||
-					strpos( $_SERVER['REQUEST_URI'], "base64" ) ) {
-					@header( "HTTP/1.1 414 Request-URI Too Long" );
-					@header( "Status: 414 Request-URI Too Long" );
-					@header( "Connection: Close" );
-					@exit;
+				//remove wp-generator meta tag
+				if ( $bwpsoptions['st_generator'] == 1 ) { 
+					remove_action( 'wp_head', 'wp_generator' );
+				}
+				
+				//remove login error messages if turned on
+				if ( $bwpsoptions['st_loginerror'] == 1 ) {
+					add_filter( 'login_errors', create_function( '$a', 'return null;' ) );
+				}
+				
+				//remove wlmanifest link if turned on
+				if ( $bwpsoptions['st_manifest'] == 1 ) {
+					remove_action( 'wp_head', 'wlwmanifest_link' );
+				}
+				
+				//remove rsd link from header if turned on
+				if ( $bwpsoptions['st_edituri'] == 1 ) {
+					remove_action( 'wp_head', 'rsd_link' );
+				}
+				
+				//ban extra-long urls if turned on
+				if ( $bwpsoptions['st_longurl'] == 1 && ! is_admin() ) {
+				
+					if ( 
+						! strpos( $_SERVER['REQUEST_URI'], 'infinity=scrolling&action=infinite_scroll' ) &&
+						(
+							strlen( $_SERVER['REQUEST_URI'] ) > 255 ||
+							strpos( $_SERVER['REQUEST_URI'], 'eval(' ) ||
+							strpos( $_SERVER['REQUEST_URI'], 'CONCAT' ) ||
+							strpos( $_SERVER['REQUEST_URI'], 'UNION+SELECT' ) ||
+							strpos( $_SERVER['REQUEST_URI'], 'base64' ) 
+						) 
+
+					) {
+						@header( 'HTTP/1.1 414 Request-URI Too Long' );
+						@header( 'Status: 414 Request-URI Too Long' );
+						@header( 'Cache-Control: no-cache, must-revalidate' );
+						@header( 'Expires: Thu, 22 Jun 1978 00:28:00 GMT' );
+						@header( 'Connection: Close' );
+						@exit;
+						
+					}
 					
 				}
 				
-			}
-			
-			//require strong passwords if turned on
-			if ( $bwpsoptions['st_enablepassword'] == 1 ) {
-				add_action( 'user_profile_update_errors',  array( &$this, 'strongpass' ), 0, 3 );
+				//require strong passwords if turned on
+				if ( $bwpsoptions['st_enablepassword'] == 1 ) {
+					add_action( 'user_profile_update_errors',  array( &$this, 'strongpass' ), 0, 3 );
+					
+					if ( isset( $_GET['action'] ) && ( $_GET['action'] == 'rp' || $_GET['action'] == 'resetpass' ) && isset( $_GET['login'] ) ) {
+						add_action( 'login_head', array( &$this, 'passwordreset' ) );
+					}
+
+				}
 				
-				if ( isset( $_GET['action'] ) && ( $_GET['action'] == 'rp' || $_GET['action'] == 'resetpass' ) && isset( $_GET['login'] ) ) {
-					add_action( 'login_head', array( &$this, 'passwordreset' ) );
+				//display random number for wordpress version if turned on
+				if ( $bwpsoptions['st_randomversion'] == 1 ) {
+					add_action( 'plugins_loaded', array( &$this, 'randomVersion' ) );
+				}
+				
+				//remove theme update notifications if turned on
+				if ( $bwpsoptions['st_themenot'] == 1 ) {
+					add_action( 'plugins_loaded', array( &$this, 'themeupdates' ) );
+				}
+				
+				//remove plugin update notifications if turned on
+				if ( $bwpsoptions['st_pluginnot'] == 1 ) {
+					add_action( 'plugins_loaded', array( &$this, 'pluginupdates' ) );
+				}
+				
+				//remove core update notifications if turned on
+				if ( $bwpsoptions['st_corenot'] == 1 ) {
+					add_action( 'plugins_loaded', array( &$this, 'coreupdates' ) );
+				}
+				
+				//load filecheck and backup if needed (if this isn't a 404 page)
+				if ( ! $is_404 ) {
+					add_action( 'plugins_loaded', array( &$this, 'backup' ) );
+				
+					add_action( 'plugins_loaded', array( &$this, 'filecheck' ) );
 				}
 
-			}
-			
-			//display random number for wordpress version if turned on
-			if ( $bwpsoptions['st_randomversion'] == 1 ) {
-				add_action( 'plugins_loaded', array( &$this, 'randomVersion' ) );
-			}
-			
-			//remove theme update notifications if turned on
-			if ( $bwpsoptions['st_themenot'] == 1 ) {
-				add_action( 'plugins_loaded', array( &$this, 'themeupdates' ) );
-			}
-			
-			//remove plugin update notifications if turned on
-			if ( $bwpsoptions['st_pluginnot'] == 1 ) {
-				add_action( 'plugins_loaded', array( &$this, 'pluginupdates' ) );
-			}
-			
-			//remove core update notifications if turned on
-			if ( $bwpsoptions['st_corenot'] == 1 ) {
-				add_action( 'plugins_loaded', array( &$this, 'coreupdates' ) );
-			}
-			
-			//load filecheck and backup if needed (if this isn't a 404 page)
-			if ( ! $is_404 ) {
-				add_action( 'plugins_loaded', array( &$this, 'backup' ) );
-			
-				add_action( 'plugins_loaded', array( &$this, 'filecheck' ) );
 			}
 		
 		}
@@ -247,7 +276,7 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 			
 			//use current host if host is not provided
 			if ( $rawhost == '' ) {
-				$rawhost = $wpdb->escape( $_SERVER['REMOTE_ADDR'] );
+				$rawhost = $wpdb->escape( $this->getIp() );
 			}
 			
 			$host = ip2long( $rawhost );
@@ -334,7 +363,7 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 			}
 					
 			//see if the host is locked out
-			$hostCheck = $wpdb->get_var( "SELECT `host` FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE `exptime` > " . current_time( 'timestamp' ) . " AND `host` = '" . $wpdb->escape( $_SERVER['REMOTE_ADDR'] ) . "' AND `active` = 1;" );
+			$hostCheck = $wpdb->get_var( "SELECT `host` FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE `exptime` > " . current_time( 'timestamp' ) . " AND `host` = '" . $wpdb->escape( $this->getIp() ) . "' AND `active` = 1;" );
 				
 			//return false if both the user and the host are not locked out	
 			if ( ! $userCheck && ! $hostCheck ) {
@@ -430,6 +459,40 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 				$bwps_filecheck = new bwps_filecheck();
 			
 		}
+
+		/**
+		 * Returns the actual IP address of the user
+		 * 
+		 * @return  String The IP address of the user
+		 * 
+		 * */
+		function getIp() {
+
+			//Just get the headers if we can or else use the SERVER global
+			if ( function_exists( 'apache_request_headers' ) ) {
+
+				$headers = apache_request_headers(); 
+
+			} else { 
+
+				$headers = $_SERVER;
+
+			}
+
+			//Get the forwarded IP if it exists
+			if ( array_key_exists( 'X-Forwarded-For', $headers ) ) {
+				
+				$theIP = $headers['X-Forwarded-For'];
+                        
+			} else {
+				
+				$theIP = $_SERVER['REMOTE_ADDR'];
+                                
+			}
+
+			return $theIP;
+
+		}
 		
 		/**
 		 * Lockout user or host
@@ -475,22 +538,22 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 					
 				}
 				
-				if ( filter_var( $wpdb->escape( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP ) && ( $bwpsoptions['id_blacklistip'] == 1 || $bwpsoptions['ll_blacklistip'] == 1 ) ) {
+				if ( filter_var( $wpdb->escape( $this->getIp() ), FILTER_VALIDATE_IP ) && ( $bwpsoptions['id_blacklistip'] == 1 || $bwpsoptions['ll_blacklistip'] == 1 ) ) {
 				
 					if ( $bwpsoptions['id_blacklistip'] == 1 && $bwpsoptions['ll_blacklistip'] == 1 ) {
 				
 						$locklimit = min( $bwpsoptions['ll_blacklistipthreshold'], $bwpsoptions['id_blacklistipthreshold'] );
-						$lockcount = $wpdb->get_var( "SELECT COUNT(*) FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE host='" . $wpdb->escape( $_SERVER['REMOTE_ADDR'] ) . "';" ) + 1;
+						$lockcount = $wpdb->get_var( "SELECT COUNT(*) FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE host='" . $wpdb->escape( $this->getIp() ) . "';" ) + 1;
 					
 					} elseif ( $bwpsoptions['id_blacklistip'] == 1 && $bwpsoptions['st_writefiles'] == 1 ) {
 						
 						$locklimit = $bwpsoptions['id_blacklistipthreshold'];
-						$lockcount = $wpdb->get_var( "SELECT COUNT(*) FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE type=2 AND host='" . $wpdb->escape( $_SERVER['REMOTE_ADDR'] ) . "';" ) + 1;
+						$lockcount = $wpdb->get_var( "SELECT COUNT(*) FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE type=2 AND host='" . $wpdb->escape( $this->getIp() ) . "';" ) + 1;
 				
 					} elseif ( $bwpsoptions['ll_blacklistip'] == 1 && $bwpsoptions['st_writefiles'] == 1 ) {
 						
 						$locklimit = $bwpsoptions['ll_blacklistipthreshold'];
-						$lockcount = $wpdb->get_var( "SELECT COUNT(*) FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE type =1 AND host='" . $wpdb->escape( $_SERVER['REMOTE_ADDR'] ) . "';" ) + 1;
+						$lockcount = $wpdb->get_var( "SELECT COUNT(*) FROM `" . $wpdb->base_prefix . "bwps_lockouts` WHERE type =1 AND host='" . $wpdb->escape( $this->getIp() ) . "';" ) + 1;
 				
 					} 
 					
@@ -515,11 +578,11 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 						$banlist = array_unique( $banlist, SORT_STRING );
 					}
 
-					if ( ! in_array( $wpdb->escape( $_SERVER['REMOTE_ADDR'] ), $banlist) ) {
+					if ( ! in_array( $wpdb->escape( $this->getIp() ), $banlist) ) {
 
 						$permban = true;
 					
-						$banlist[] = $wpdb->escape( $_SERVER['REMOTE_ADDR'] );
+						$banlist[] = $wpdb->escape( $this->getIp() );
 					
 						$bwpsoptions['bu_banlist'] = implode( PHP_EOL, $banlist );
 					
@@ -557,7 +620,7 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 							'active' => 1,
 							'starttime' => $currtime,
 							'exptime' => $exptime,
-							'host' => $wpdb->escape( $_SERVER['REMOTE_ADDR'] ),
+							'host' => $wpdb->escape( $this->getIp() ),
 							'user' => 0
 						)
 					);
@@ -611,11 +674,11 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 					if ( $user != '' ) {
 					
 						$username = get_user_by( 'id', $user );
-						$who = __( 'WordPress user', $this->hook ) . ', ' . $username->user_login . ', ' . __( 'at host, ', $this->hook ) . $wpdb->escape( $_SERVER['REMOTE_ADDR'] ) . ', ';
+						$who = __( 'WordPress user', $this->hook ) . ', ' . $username->user_login . ', ' . __( 'at host, ', $this->hook ) . $wpdb->escape( $this->getIp() ) . ', ';
 						
 					} else {
 					
-						$who = __( 'host', $this->hook ) . ', ' . $wpdb->escape( $_SERVER['REMOTE_ADDR'] ) . '(' . __( 'you can check the host at ', $this->hook ) . 'http://ip-adress.com/ip_tracer/' . $wpdb->escape( $_SERVER['REMOTE_ADDR'] ) . ') ';
+						$who = __( 'host', $this->hook ) . ', ' . $wpdb->escape( $this->getIp() ) . '(' . __( 'you can check the host at ', $this->hook ) . 'http://ip-adress.com/ip_tracer/' . $wpdb->escape( $this->getIp() ) . ') ';
 						
 					}
 
@@ -657,7 +720,7 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 			}
 			
 			//get default data
-			$host = $wpdb->escape( $_SERVER['REMOTE_ADDR'] );
+			$host = $wpdb->escape( $this->getIp() );
 			$username = sanitize_user( $username );
 			$user = get_user_by( 'login', $username );
 			
@@ -858,7 +921,9 @@ if ( ! class_exists( 'bwps_secure' ) ) {
 			if ( ( $bwpsoptions['id_enabled'] == 1 ||$bwpsoptions['ll_enabled'] == 1 ) && $this->checklock( $current_user->user_login ) ) {
 			
 				wp_clear_auth_cookie();
-				@header('HTTP/1.0 418 I\'m a teapot');
+				@header( 'HTTP/1.0 418 I\'m a teapot' );
+				@header( 'Cache-Control: no-cache, must-revalidate' ); 
+				@header( 'Expires: Thu, 22 Jun 1978 00:28:00 GMT' );
 				die( __( 'error', $this->hook ) );
 				
 			}

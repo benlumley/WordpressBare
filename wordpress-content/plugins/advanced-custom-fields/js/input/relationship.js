@@ -30,6 +30,10 @@
 			}
 			
 			
+			// set height of right column
+			$(this).find('.relationship_right .relationship_list').height( $(this).find('.relationship_left').height() -2 );
+			
+			
 			$(this).find('.relationship_right .relationship_list').sortable({
 				axis: "y", // limit the dragging to up/down only
 				items: '> li',
@@ -37,6 +41,7 @@
 				forcePlaceholderSize: true,
 				scroll: true
 			});
+			//////////// on complete, trigger a change event so that the field is saved for an attachment!
 			
 			
 			// load more
@@ -119,12 +124,19 @@
 
 
 		// add new li
-		right.append( new_li );
+		$el = $(new_li);
+		right.append( $el );
+		
+		
+		// trigger change on new_li
+		$el.find('input').trigger('change');
 		
 		
 		// validation
 		div.closest('.field').removeClass('error');
 		
+		
+		$(this).blur();
 		return false;
 		
 	});
@@ -153,7 +165,7 @@
 		// show
 		left.find('a[data-post_id="' + id + '"]').parent('li').removeClass('hide');
 		
-		
+		$(this).blur();
 		return false;
 		
 	});
@@ -167,7 +179,16 @@
 	*  @created: 17/01/13
 	*/
 	
-	$('.acf_relationship input.relationship_search').live('keyup', function()
+	$('.acf_relationship input.relationship_search').live('keypress', function( e ){
+		
+		// don't submit form
+		if( e.which == 13 )
+		{
+			return false;
+		}
+		
+	})
+	.live('keyup', function()
 	{	
 		// vars
 		var val = $(this).val(),
@@ -199,6 +220,30 @@
 		{
 			$(this).siblings('label').show();
 		}
+	});
+	
+	
+	/*
+	*  Filter by post_type
+	*
+	*  @description: 
+	*  @since: 3.5.7
+	*  @created: 9/04/13
+	*/
+	
+	$('.acf_relationship .select-post_type').live('change', function(){
+		
+		// vars
+		var val = $(this).val(),
+			div = $(this).closest('.acf_relationship');
+			
+		
+		// update data-s
+	    div.attr('data-post_type', val);
+	    
+	    // ajax
+	    _relationship.update_results( div );
+		
 	});
 	
 	
@@ -234,36 +279,49 @@
 		
 		
 		// vars
-		var s = div.attr('data-s'),
-			paged = parseInt( div.attr('data-paged') ),
-			taxonomy = div.attr('data-taxonomy'),
-			post_type = div.attr('data-post_type'),
-			lang = div.attr('data-lang'),
+		var attributes = {},
 			left = div.find('.relationship_left .relationship_list'),
-			right = div.find('.relationship_right .relationship_list');
+			right = div.find('.relationship_right .relationship_list'); 
 		
+		
+		// find attributes
+        $.each( div[0].attributes, function( index, attr ) {
+        	
+        	// must have 'data-'
+        	if( attr.name.substr(0, 5) != 'data-' )
+        	{
+	        	return;
+        	}
+        	
+        	
+        	// ignore
+        	if( attr.name == 'data-max' )
+        	{
+	        	return;
+        	}
+        	
+        	
+        	// add to attributes
+            attributes[ attr.name.replace('data-', '') ] = attr.value;
+        }); 
+        
 		
 		// get results
 	    $.ajax({
 			url: ajaxurl,
 			type: 'post',
 			dataType: 'html',
-			data: { 
-				'action' : 'acf_get_relationship_results', 
-				's' : s,
-				'paged' : paged,
-				'taxonomy' : taxonomy,
-				'post_type' : post_type,
-				'lang' : lang,
-				'field_name' : div.parent().attr('data-field_name'),
-				'field_key' : div.parent().attr('data-field_key')
-			},
+			data: $.extend( attributes, { 
+				action : 'acf/fields/relationship/query_posts', 
+				post_id : acf.post_id,
+				nonce : acf.nonce
+			}),
 			success: function( html ){
 				
 				div.removeClass('no-results').removeClass('loading');
 				
 				// new search?
-				if( paged == 1 )
+				if( attributes.paged == 1 )
 				{
 					left.find('li:not(.load-more)').remove();
 				}
@@ -294,6 +352,7 @@
 				
 			}
 		});
-	};	
+	};
+	
 
 })(jQuery);

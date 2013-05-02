@@ -37,6 +37,7 @@ class IWP_MMB_Core extends IWP_MMB_Helper
     var $network_admin_install;
 	
 	var $backup_repository_instance;
+	var $optimize_instance;
 	
     private $action_call;
     private $action_params;
@@ -115,9 +116,25 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 			'check_wp_version' => 'iwp_mmb_wp_checkversion',
 			'create_post' => 'iwp_mmb_post_create',
 			'update_client' => 'iwp_mmb_update_client_plugin',
+			
 			'change_comment_status' => 'iwp_mmb_change_comment_status',
 			'change_post_status' => 'iwp_mmb_change_post_status',
 			'get_comment_stats' => 'iwp_mmb_comment_stats_get',
+			
+			'get_links' => 'iwp_mmb_get_links',
+			'add_link' => 'iwp_mmb_add_link',
+			'delete_link' => 'iwp_mmb_delete_link',
+			'delete_links' => 'iwp_mmb_delete_links',
+			
+			'create_post' => 'iwp_mmb_post_create',
+			'change_post_status' => 'iwp_mmb_change_post_status',
+			'get_posts' => 'iwp_mmb_get_posts',
+			'delete_post' => 'iwp_mmb_delete_post',
+			'delete_posts' => 'iwp_mmb_delete_posts',
+			'edit_posts' => 'iwp_mmb_edit_posts',
+			'get_pages' => 'iwp_mmb_get_pages',
+			'delete_page' => 'iwp_mmb_delete_page',
+			
 			'install_addon' => 'iwp_mmb_install_addon',
 			'add_link' => 'iwp_mmb_add_link',
 			'add_user' => 'iwp_mmb_add_user',
@@ -127,7 +144,7 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 			'run_task' => 'iwp_mmb_run_task_now',
 			'delete_schedule_task' => 'iwp_mmb_delete_task_now',
 			'execute_php_code' => 'iwp_mmb_execute_php_code',
-			'delete_backup' => 'mmm_delete_backup',
+			'delete_backup' => 'iwp_mmb_delete_backup',
 			'remote_backup_now' => 'iwp_mmb_remote_backup_now',
 			'set_notifications' => 'iwp_mmb_set_notifications',
 			'clean_orphan_backups' => 'iwp_mmb_clean_orphan_backups',
@@ -135,9 +152,15 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 			'edit_users' => 'iwp_mmb_edit_users',
 			'get_plugins_themes' => 'iwp_mmb_get_plugins_themes',
 			'edit_plugins_themes' => 'iwp_mmb_edit_plugins_themes',
+			'get_comments' => 'iwp_mmb_get_comments',
+			'action_comment' => 'iwp_mmb_action_comment',
+			'bulk_action_comments' => 'iwp_mmb_bulk_action_comments',
+			'replyto_comment' => 'iwp_mmb_reply_comment',
 			'client_brand' => 'iwp_mmb_client_brand',
 			'set_alerts' => 'iwp_mmb_set_alerts',
 			'maintenance' => 'iwp_mmb_maintenance_mode',
+			
+			'wp_optimize' => 'iwp_mmb_wp_optimize',
 			
 			'backup_repository' => 'iwp_mmb_backup_repository'
 		);
@@ -224,10 +247,23 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 		
 		$iwp_client_activate_key = get_option('iwp_client_activate_key');
 		
+		//check BWP 
+		$bwp = get_option("bit51_bwps");
+		$notice_display_URL=admin_url();
+		if(!empty($bwp))
+		{
+			//$bwpArray = @unserialize($bwp);
+			if($bwp['hb_enabled']==1)
+			$notice_display_URL = get_option('home');
+		}
+		
+		$notice_display_URL = rtrim($notice_display_URL, '/').'/';
+		
+		
 		echo '<div class="updated" style="text-align: center;"><p style="color: green; font-size: 14px; font-weight: bold;">Add this site to IWP Admin panel</p><p>
 		<table border="0" align="center">';
 		if(!empty($iwp_client_activate_key)){
-			echo '<tr><td align="right">WP-ADMIN URL:</td><td align="left"><strong>'.admin_url().'</strong></td></tr>
+			echo '<tr><td align="right">WP-ADMIN URL:</td><td align="left"><strong>'.$notice_display_URL.'</strong></td></tr>
 			<tr><td align="right">ADMIN USERNAME:</td><td align="left"><strong>'.$username.'</strong> (or any admin id)</td></tr>
 			<tr><td align="right">ACTIVATION KEY:</td><td align="left"><strong>'.$iwp_client_activate_key.'</strong></td></tr>';
 		}
@@ -261,6 +297,20 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 		global $wpdb;
 		$option = $wpdb->get_var( $wpdb->prepare( "SELECT `option_value` FROM {$wpdb->base_prefix}options WHERE option_name = %s LIMIT 1", $option_name ) );
         return $option;
+    }
+    
+	
+	/**
+     * Gets an instance of the WP_Optimize class
+     * 
+     */
+    function wp_optimize_instance()
+    {
+        if (!isset($this->optimize_instance)) {
+            $this->optimize_instance = new IWP_MMB_Optimize();
+        }
+        
+        return $this->optimize_instance;
     }
     
     /**
@@ -422,7 +472,7 @@ class IWP_MMB_Core extends IWP_MMB_Helper
         }
         return $this->installer_instance;
     }
-    
+	
     /**
      * Plugin install callback function
      * Check PHP version
@@ -608,7 +658,7 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 		$where      = isset($_GET['iwp_goto']) ? $_GET['iwp_goto'] : false;
         $username   = isset($_GET['username']) ? $_GET['username'] : '';
         $auto_login = isset($_GET['auto_login']) ? $_GET['auto_login'] : 0;
-        
+        $_SERVER['HTTP_REFERER']='';
 		if( !function_exists('is_user_logged_in') )
 			include_once( ABSPATH.'wp-includes/pluggable.php' );
 		
